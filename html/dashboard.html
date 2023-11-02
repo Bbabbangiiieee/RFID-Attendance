@@ -14,6 +14,8 @@
   <link href="../assets/css/sidebars.css" rel="stylesheet">
   <link rel="icon" type="image/x-icon" href="../images/ustp_favicon.jpg">
   <script src="../assets/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js/dist/Chart.min.js"></script>
+
 
 
 </head>
@@ -26,12 +28,10 @@
       <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 link-body-emphasis text-decoration-none">
         <img class="logo" src="../images/ustp_favicon.jpg">
       </a>
-      <p class="nav col-12 col-lg-auto me-lg-auto mb-2 mb-lg-0 justify-content-center mb-md-0 nav-link px-2 link-body-emphasis"
-        style="color: #0B0B45 !important;">
-        UNIVERSITY OF SCIENCE AND TECHNOLOGY OF SOUTHERN PHILIPPINES
-      </p>
-
-
+        <p class="nav col-12 col-lg-auto me-lg-auto mb-2 mb-lg-0 justify-content-center mb-md-0 nav-link px-2 link-body-emphasis centeredp"
+          style="color: #0B0B45 !important;">
+          UNIVERSITY OF SCIENCE AND TECHNOLOGY OF SOUTHERN PHILIPPINES
+        </p>
 
       <div class="dropdown text-end">
         <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown"
@@ -53,76 +53,222 @@
     </div>
   </header>
 
-  <main class="d-flex flex-nowrap">
-    <div class="flex-shrink-0 p-3 sidebar" style="width: 280px;">
-      <a href="/" class="d-flex align-items-center pb-3 mb-3 link-body-emphasis text-decoration-none border-bottom">
-        <svg class="bi pe-none me-2" width="30" height="24">
-          <use xlink:href="#bootstrap" />
-        </svg>
-        <span class="fs-5 fw-semibold">Dashboard</span>
-      </a>
-      <ul class="list-unstyled ps-0">
-        <li class="mb-1">
-          <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed"
-            data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true">
-            Home
-          </button>
-          <div class="collapse show" id="home-collapse">
-            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-              <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Overview</a></li>
-              <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Updates</a></li>
-              <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Reports</a></li>
-            </ul>
-          </div>
-        </li>
-        <li class="mb-1">
-          <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed"
-            data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false">
+  <nav class="col-3">
+    <button class="btn btn-toggle" type="button" aria-expanded="false">
+      <span class="material-symbols-outlined">menu</span>
+    </button>
+
+    <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark sidebar" style="width: 280px;">
+
+      <hr>
+      <ul class="nav nav-pills flex-column mb-auto list">
+        <li class="nav-item">
+          <a href="dashboard.html" class="nav-link" aria-current="page">
+            <span class="material-symbols-outlined icon">
+              speed
+            </span>
             Dashboard
-          </button>
-          <div class="collapse" id="dashboard-collapse">
-            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-              <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Overview</a></li>
-              <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Weekly</a></li>
-              <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Monthly</a></li>
-              <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Annually</a></li>
-            </ul>
-          </div>
+          </a>
         </li>
-        <li class="mb-1">
-          <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed"
-            data-bs-toggle="collapse" data-bs-target="#orders-collapse" aria-expanded="false">
-            Orders
-          </button>
-          <div class="collapse" id="orders-collapse">
-            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-              <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">New</a></li>
-              <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Processed</a></li>
-              <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Shipped</a></li>
-              <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Returned</a></li>
-            </ul>
-          </div>
+        <li>
+          <a href="#" class="nav-link text-white">
+            <span class="material-symbols-outlined icon">
+              assignment_turned_in</span>
+            Attendance
+          </a>
         </li>
-        <li class="border-top my-3"></li>
-        <li class="mb-1">
-          <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed"
-            data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="false">
-            Account
-          </button>
-          <div class="collapse" id="account-collapse">
-            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-              <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">New...</a></li>
-              <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Profile</a></li>
-              <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Settings</a></li>
-              <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Sign out</a></li>
-            </ul>
-          </div>
+        <li>
+          <a href="#" class="nav-link text-white">
+            <span class="material-symbols-outlined icon">
+              calendar_today
+            </span>
+            Class Schedule
+          </a>
+        </li>
+        <li>
+          <a href="#" class="nav-link text-white">
+            <span class="material-symbols-outlined icon">
+              calendar_month
+            </span>
+            Calendar
+          </a>
+        </li>
+        <li>
+          <a href="#" class="nav-link text-white">
+            <span class="material-symbols-outlined icon">
+              help
+            </span>
+            Help
+          </a>
         </li>
       </ul>
+
+    </div>
+  </nav>
+
+  <main clas="col-9">
+
+    <div class="d-flex bd-highlight main-dashboard" aria-expanded="false">
+      <div class="p-2 flex-grow-1 bd-highlight ">
+        <h2 class="dashboard">Dashboard</h2>
+        <div class="cardBox">
+          <div class="card">
+            <div>
+              <div class="numbers">8</div>
+              <div class="cardName">Classes</div>
+            </div>
+
+            <div class="iconBx">
+              <span class="material-symbols-outlined">
+                school
+              </span>
+            </div>
+          </div>
+
+          <div class="card">
+            <div>
+              <div class="numbers">400</div>
+              <div class="cardName">Students</div>
+            </div>
+
+            <div class="iconBx">
+              <span class="material-symbols-outlined">
+                groups
+              </span>
+            </div>
+          </div>
+        </div>
+        <!-- ================ Charts ================= -->
+        <div class="dashchartsBx">
+          <div class="charts">
+            <h3 class="chart-title">Butang lang title here</h3>
+            <div style="height:300px; width:400px;">
+              <canvas id="lineChart"></canvas>
+            </div>
+          </div>
+
+          <div class="charts">
+            <h3 class="chart-title">Butang lang title here</h3>
+            <div style="height:300px; width:400px;">
+              <canvas id="pieChart"></canvas>
+            </div>
+          </div>
+
+          <div class="charts" style="margin-bottom: 20vh;">
+            <h3 class="chart-title">Butang lang title here</h3>
+            <div style="height:300px; width:400px;">
+              <canvas id="barChart"></canvas>
+            </div>
+          </div>
+
+          <div class="charts" style="margin-bottom: 20vh;">
+            <h3 class="chart-title">Butang lang title here</h3>
+            <div style="height:300px; width:400px;">
+              <canvas id="horizontalBarChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+
     </div>
 
-    <div class="b-example-divider b-example-vr"></div>
+
   </main>
 </body>
 
 </html>
+
+<script>
+  var lineChart = new Chart(document.getElementById("lineChart"), {
+    type: "line",
+    data: {
+      labels: ["January", "February", "March", "April", "May", "June", "July"],
+      datasets: [{
+        label: "Student Attendance",
+        data: [100, 95, 90, 93, 98, 97, 96],
+        backgroundColor: ['#51f55c', '#f551c5', '#eff551', '#5577f5'], // background color for the line
+        borderColor: '#361d32', // color for the line
+        borderWidth: 1, // line width in pixels
+        pointRadius: 3, // radius of data points
+        fill: false // disable fill under the line
+      }]
+    }
+  });
+
+  var barChart = new Chart(document.getElementById("barChart"), {
+    type: "bar",
+    data: {
+      labels: ["January", "February", "March", "April", "May", "June", "July"],
+      datasets: [{
+        label: "Student Attendance",
+        data: [100, 95, 90, 93, 98, 97, 96],
+        backgroundColor: ['#51f55c', '#f551c5', '#eff551', '#5577f5'], // background color for the line
+        borderColor: '#361d32', // color for the line
+        borderWidth: 1, // line width in pixels
+        pointRadius: 3, // radius of data points
+        fill: false // disable fill under the line
+      }]
+    }
+  });
+
+  var pieChart = new Chart(document.getElementById("pieChart"), {
+    type: "pie",
+    data: {
+      labels: ["Present", "Absent"],
+      datasets: [{
+        label: "Student Attendance",
+        backgroundColor: ['#51f55c', '#f551c5', '#eff551', '#5577f5'],
+        borderColor: '#361d32',
+        borderWidth: 1,
+        data: [95, 5]
+      }]
+    }
+  });
+
+  var horizontalBarChart = new Chart(document.getElementById("horizontalBarChart"), {
+    type: "horizontalBar",
+    data: {
+      labels: ["Present", "Absent"],
+      datasets: [{
+        label: "Student Attendance",
+        data: [95, 5],
+        backgroundColor: ["rgba(255, 99, 132, 1)", "rgba(54, 162, 235, 1)"]
+      }]
+    },
+    options: {
+      legend: {
+        display: false
+      },
+      title: {
+        display: true,
+        text: "Student Attendance"
+      }
+    }
+  });
+
+</script>
+
+<script>
+  const toggleButton = document.querySelector('.btn-toggle');
+  const sidebar = document.querySelector('.sidebar'); // Assuming your sidebar has an ID of "sidebar"
+  const main = document.querySelector(".main-dashboard");
+
+  toggleButton.addEventListener('click', () => {
+    const isExpanded = toggleButton.getAttribute('aria-expanded') === 'true';
+
+    if (isExpanded) {
+      toggleButton.setAttribute('aria-expanded', 'false');
+      main.setAttribute('aria-expanded', 'false');
+    } else {
+      toggleButton.setAttribute('aria-expanded', 'true');
+      main.setAttribute('aria-expanded', 'true');
+    }
+
+    sidebar.classList.toggle('collapsed');
+
+
+
+  });
+</script>

@@ -3,12 +3,7 @@ body{
   background-size: cover;
   background-repeat: no-repeat;
   background-attachment: fixed;
-}
-p{
-  font-family: 'Franklin Gothic';
-  font-weight: bolder;
-  font-size: 20px !important;
-  margin-left: -1rem;
+  
 }
 
 hr{
@@ -35,6 +30,7 @@ hr{
 .header{
   background-color:#f8ae00 !important;
   padding: 0.1rem !important;
+  margin-bottom: 0px !important;
 }
 
 
@@ -48,15 +44,23 @@ hr{
 }
 
 .dropdown-item{
-  color:#0B0B45;
+  color:#0B0B45 !important;
+}
+
+.centeredp{
+  font-family: 'Franklin Gothic';
+  font-size: 20px !important;
+  margin-left: -1rem;
 }
 
 /* Adjustments for smaller screens */
 @media (max-width: 768px) {
-  p {
-    left: 0 !important;
+  .centeredp {
+    display: block;
+    margin: 0 auto;
     text-align: center;
   }
+  
 
   .header{
     padding: 0.5rem !important;
