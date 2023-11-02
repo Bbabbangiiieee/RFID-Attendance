@@ -6,7 +6,6 @@
 
 body {
   height: 100vh;
-  display: flex;
   background-image: url("../images/USTP-banner.jpg");
   background-size: cover;
   background-repeat: no-repeat;
@@ -142,96 +141,4 @@ hr {
 
 .logo {
   height: 100px;
-}
-
-.container-top {
-  display: flex;
-  justify-content:space-between;
-  height: 8%;
-  width: 100%;
-  background-color: #0B0B45;
-}
-
-.univ-top{
-  display: flex;
-}
-
-.admin-logo {
-  height: 100%;
-  padding: 5px 5px;
-  margin-left: 10px;
-  ;
-}
-
-.univ {
-  color: #fff;
-  font-family: 'Franklin Gothic';
-  font-size: 150%;
-  font-weight: normal;
-  line-height: 20px;
-  padding-top: 15px;
-}
-
-.account {
-  color: #fff;
-  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-  font-size: 150%;
-  font-weight: 10;
-  vertical-align: bottom;
-}
-
-.account:hover{
-  text-decoration: none;
-  color: #fff
-}
-
-.profile {
-  color: #fff;
-  font-size: 25px;
-  padding-top: 12px;
-}
-
-.dropdown{
-  margin-right: 3%;
-}
-
-.dropdown-menu {
-  display: none;
-  position: absolute;
-  top: 100%;
-  background:#f8ae00;
-  text-align: center;
-  font-family: 'Franklin Gothic'; 
-  width: 100%;
-  backdrop-filter: blur(10px);
-  border:none;
-  border-top-right-radius: 0px;
-  border-top-left-radius: 0px;
-}
-
-.dropdown-item{
-  font-family: 'Franklin Gothic';
-  color:#fff;
-}
-
-.dropdown:hover .dropdown-menu {
-  display: block;
-}
-
-@media (max-width: 768px) {
-  .container {
-    width: 90%;
-    /* Adjust container width for smaller screens */
-    margin: auto;
-  }
-
-  .admin-logo {
-    height: 50px;
-    /* Adjust image size for smaller screens */
-  }
-
-  .univ {
-    font-size: 120%;
-    padding-top: 10px;
-  }
 }

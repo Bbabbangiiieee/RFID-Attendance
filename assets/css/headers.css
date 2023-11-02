@@ -1,0 +1,82 @@
+body{
+  background-image: url("../../images/USTP-banner.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  
+}
+
+hr{
+  color: #0B0B45;
+}
+
+.form-control-dark:focus {
+  border-color: #fff;
+  box-shadow: 0 0 0 .25rem rgba(255, 255, 255, .25);
+}
+
+.text-small {
+  font-size: 85%;
+}
+
+.dropdown-toggle:not(:focus) {
+  outline: 0;
+}
+
+.logo{
+  height:35px;
+}
+
+.header{
+  background-color:#f8ae00 !important;
+  padding: 0.1rem !important;
+  margin-bottom: 0px !important;
+}
+
+
+.dropdown{
+  float:right;
+}
+
+.dropdown-menu{
+  background-color: #f5b82c;
+  border-color: #0B0B45;
+}
+
+.dropdown-item{
+  color:#0B0B45 !important;
+}
+
+.centeredp{
+  font-family: 'Franklin Gothic';
+  font-size: 20px !important;
+  margin-left: -1rem;
+}
+
+/* Adjustments for smaller screens */
+@media (max-width: 768px) {
+  .centeredp {
+    display: block;
+    margin: 0 auto;
+    text-align: center;
+  }
+  
+
+  .header{
+    padding: 0.5rem !important;
+  }
+
+  .logo {
+    left: 0;
+    height: 30px;
+    margin-bottom: -1.5rem;
+  }
+
+  .header-content {
+    right: 0 !important;
+  }
+
+  .dropdown{
+    margin-top: -1.5rem;
+  }
+}
