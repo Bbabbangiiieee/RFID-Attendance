@@ -1,0 +1,68 @@
+.main-container {
+	max-width: 1366px;
+	width: 100%;
+	margin: 0 auto;
+	padding: 20px;
+	padding-top: 0px;
+	min-height: 100vh;
+}
+
+button.btn-action {
+	color: #0B0B45 !important;
+	border: none;
+	background: #f8ae00;
+	border-color: #f8ae00;
+	border-radius: 8px;
+	padding: 15px;
+	font-size: 15px;
+	border: 1px solid #0B0B45;
+	-webkit-box-shadow: 0 10px 20px -5px rgba(19, 31, 51, .65);
+	box-shadow: 0 10px 20px -5px rgba(19, 31, 51, .65);
+}
+
+button.btn-action:hover {
+	background-color: rgba(244, 180, 0, 0.8);
+	border-color: rgba(244, 180, 0, 0.8);
+	color: #0B0B45;
+}
+
+.console-log {
+	margin-bottom: 20px;
+}
+
+.action-buttons {
+	margin-bottom: 100px;
+}
+
+
+@media only screen and (max-width: 1366px) {
+
+	.main-container {
+		max-width: 1200px
+	}
+}
+
+@media only screen and (max-width: 768px) {
+
+	section {
+		padding: 20px 40px
+	}
+}
+
+@media only screen and (max-width: 425px) {
+
+	.main-container {
+		padding-top: 110px
+	}
+
+	section {
+		padding: 20px
+	}
+
+	button.btn-action {
+		font-size: 12px;
+		padding: 10px 15px;
+		width: 100%;
+		margin: 5px 0
+	}
+}
