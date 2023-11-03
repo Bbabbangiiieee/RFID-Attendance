@@ -7,7 +7,7 @@
 	min-height: 100vh;
 }
 
-button.btn-action {
+.btn-action {
 	color: #0B0B45 !important;
 	border: none;
 	background: #f8ae00;
@@ -15,15 +15,34 @@ button.btn-action {
 	border-radius: 8px;
 	padding: 15px;
 	font-size: 15px;
-	border: 1px solid #0B0B45;
+	border: 1px solid #f8ae00;
 	-webkit-box-shadow: 0 10px 20px -5px rgba(19, 31, 51, .65);
 	box-shadow: 0 10px 20px -5px rgba(19, 31, 51, .65);
 }
 
-button.btn-action:hover {
+.btn-action:hover {
 	background-color: rgba(244, 180, 0, 0.8);
 	border-color: rgba(244, 180, 0, 0.8);
 	color: #0B0B45;
+}
+
+.btn-remove {
+	color: #f8ae00 !important;
+	border: none;
+	background: #c9381f;
+	border-color: #c9381f;
+	border-radius: 8px;
+	padding: 15px;
+	font-size: 15px;
+	border: 1px solid #c9381f;
+	-webkit-box-shadow: 0 10px 20px -5px rgba(19, 31, 51, .65);
+	box-shadow: 0 10px 20px -5px rgba(19, 31, 51, .65);
+}
+
+.btn-remove:hover {
+	background-color: rgba(167, 79, 57, 0.8);
+	border-color: rgba(167, 79, 57, 0.8);
+	color: #f8ae00;
 }
 
 .console-log {
@@ -34,6 +53,62 @@ button.btn-action:hover {
 	margin-bottom: 100px;
 }
 
+#addModal {
+	display: none;
+	position: fixed;
+	z-index: 1;
+	left: 50%;
+	top: 55%;
+	transform: translate(-50%, -50%);
+	width: 50%;
+	max-width: 400px;
+	padding: 20px;
+	border-radius: 15px;
+	background: transparent;
+	border: 1.5px solid rgba(248, 174, 0, 0.2);
+	backdrop-filter: blur(90px);
+	transition: all 0.5s;
+}
+
+#editForm,
+h3 {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	transition: all 0.5s;
+	color:#0B0B45;
+	font-weight: 600;
+}
+
+.btn{
+	display: flex;
+	text-align: center;
+	border-radius: 5px;
+	padding: 20px;
+	border: 0px;
+	font-size: 15px;
+  }
+
+#cancelAdd, #save{
+	padding: 10px;
+	margin: 3px;
+}
+
+label{
+	align-items: left;
+}
+
+
+input{
+	border-radius: 6px;
+	width:54%;
+}
+
+
+textarea{
+	height: 30vh;
+	width: 54%;
+}
 
 @media only screen and (max-width: 1366px) {
 

@@ -47,6 +47,11 @@ hr{
   color:#0B0B45 !important;
 }
 
+.dropdown-item:hover{
+  background-color: #0B0B45;
+  color:#f8ae00 !important;
+}
+
 .centeredp{
   font-family: 'Franklin Gothic';
   font-size: 20px !important;

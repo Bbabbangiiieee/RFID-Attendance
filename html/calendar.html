@@ -51,8 +51,8 @@
                     Teacher's Name
                 </a>
                 <ul class="dropdown-menu text-small">
-                    <li><a class="dropdown-item" href="#">Add Class</a></li>
-                    <li><a class="dropdown-item" href="#">Profile</a></li>
+                    <li><a class="dropdown-item" href="schedule.html">Class Schedule</a></li>
+                    <li><a class="dropdown-item" href="profile.html">Profile</a></li>
                     <li>
                         <hr class="dropdown-divider">
                     </li>
@@ -82,14 +82,14 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="nav-link text-white">
+                    <a href="attendance.html" class="nav-link text-white">
                         <span class="material-symbols-outlined icon">
                             assignment_turned_in</span>
                         Attendance
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="nav-link text-white">
+                    <a href="schedule.html" class="nav-link text-white">
                         <span class="material-symbols-outlined icon">
                             calendar_today
                         </span>
@@ -105,7 +105,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="nav-link text-white">
+                    <a href="help.html" class="nav-link text-white">
                         <span class="material-symbols-outlined icon">
                             help
                         </span>
@@ -121,18 +121,37 @@
             <div class="p-2 flex-grow-1 bd-highlight ">
                 <h2 class="dashboard">Calendar</h2>
                 <div class="main-container ">
-                        <div class="console-log">
-                            <div class="log-content">
-                                <div class="--noshadow" id="demoEvoCalendar"></div>
-                            </div>
+                    <div class="console-log">
+                        <div class="log-content">
+                            <div class="--noshadow" id="demoEvoCalendar"></div>
                         </div>
-                        <center>
+                    </div>
+                    <center>
                         <div class="action-buttons">
-                            <button class="btn-action" id="addBtn">ADD EVENT</button>
-                            <button class="btn-action" id="removeBtn">REMOVE EVENT</button>
+                            <button class="btn-action btn-add" id="addBtn">ADD EVENT</button>
+                            <button class="btn-remove" id="removeBtn">REMOVE EVENT</button>
                         </div>
                     </center>
+
                 </div>
+            </div>
+        </div>
+
+        <div id="addModal">
+            <h3>Add Event</h3>
+            <form id="editForm">
+                <label for="date">Date:</label>
+                <input type="date" id="date" name="date"><br>
+                <label for="event">Event:</label>
+                <input type="text" id="event" placeholder="" name="event"><br>
+                <label for="desc">Description:</label>
+                <textarea id="desc" placeholder="" name="desc"></textarea>
+
+            </form>
+            
+            <div class="btn">
+                <input type="button" id="cancelAdd" class="btn-remove" value="Cancel">
+                <input type="button" id="save" class="btn-action" value="Save">
             </div>
         </div>
 
@@ -168,5 +187,28 @@
 
 
 
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        // Add Data Modal Script
+        $('.btn-add').on('click', function () {
+
+            // Show the modal
+            $('#addModal').show();
+        });
+
+
+        $('#save').on('click', function () {
+
+            //Insert add code here
+
+            $('#addModal').hide();
+        });
+        $('#cancelAdd').on('click', function () {
+            // Hide the modal
+            $('#addModal').hide();
+        });
     });
 </script>
