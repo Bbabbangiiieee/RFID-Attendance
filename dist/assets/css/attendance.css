@@ -1,0 +1,55 @@
+#date-container{
+    display: inline-block;
+    vertical-align: middle;
+    padding-bottom: 15px;
+}
+
+.chevron{
+
+    cursor: pointer;
+  
+}
+/* Create a flex container to center elements horizontally */
+.att-container {
+    display: flex;
+    padding-right: 20px;
+    padding-top: 10px;
+}
+
+.date-container{
+    justify-content: right;
+    align-items: right;
+}
+
+.dropdown{
+    margin-left: 20px;
+}
+
+.dropdown-toggle::after {
+    float:right;
+    margin-top: 10px;
+  }
+
+.class{
+    width: 200px !important;
+    background-color: #f8ae00;
+    color:#0B0B45 !important;
+    text-align: left;
+    margin-right: 10px;
+}
+
+.class:hover {
+	background-color: rgba(244, 180, 0, 0.8);
+	border-color: rgba(244, 180, 0, 0.8);
+	color: #0B0B45;
+}
+
+.classlist{
+    width: 200px !important;
+}
+
+.classlist:hover{
+    background-color: #0B0B45;
+    color:#f8ae00 !important;
+}
+
