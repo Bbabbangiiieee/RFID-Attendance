@@ -37,18 +37,8 @@
       const month = currentDate.toLocaleString('default', { month: 'short' });
       const year = currentDate.getFullYear();
 
-      container.textContent = `Date: ${day} ${month} ${year}`;
-    }
-    // Function to increment the date
-    function incrementDate() {
-      currentDate.setDate(currentDate.getDate() + 1);
-      displayCurrentDate();
-    }
 
-    // Function to decrement the date
-    function decrementDate() {
-      currentDate.setDate(currentDate.getDate() - 1);
-      displayCurrentDate();
+      container.textContent = `Date: ${day} ${month} ${year}`;
     }
   </script>
 
@@ -142,7 +132,7 @@
     </div>
   </nav>
 
-  <main clas="col-9">
+  <main>
 
     <div class="d-flex bd-highlight main-dashboard" aria-expanded="false">
       <div class="p-2 flex-grow-1 bd-highlight ">
@@ -316,120 +306,155 @@
     }
 
     // Function to retrieve and display data based on the selected class
-function retrieveAndDisplayData(selectedClass) {
-  // Reset studRefs and counter for each call
-  let studRefs = [];
-  let counter = 1;
-  let stud_names = []; // Declare an array to store stud_names and studRefs
-  let stud_name; // Declare stud_name outside the loop
-  let class_name_sec;
-  const filteredPromises = [];
+    function retrieveAndDisplayData(selectedClass) {
+      // Reset studRefs and counter for each call
+      let studRefs = [];
+      let counter = 1;
+      let stud_names = []; // Declare an array to store stud_names and studRefs
+      let stud_name; // Declare stud_name outside the loop
+      let class_name_sec;
+      const filteredPromises = [];
 
-  // Retrieve data from the stud_class collection based on the selectedClass
-  getDocs(stud_classRef)
-    .then((studClassSnapshot) => {
-      const promises = [];
+      // Retrieve data from the stud_class collection based on the selectedClass
+      getDocs(stud_classRef)
+        .then((studClassSnapshot) => {
+          const promises = [];
 
-      studClassSnapshot.forEach((studClassDoc) => {
-        const studClassData = studClassDoc.data();
-        const studentRef = studClassData.student;
-        const classRef = studClassData.class;
+          studClassSnapshot.forEach((studClassDoc) => {
+            const studClassData = studClassDoc.data();
+            const studentRef = studClassData.student;
+            const classRef = studClassData.class;
 
-        // Use a closure to capture the value of stud_name and studRef for each iteration
-        let studRef;
+            // Use a closure to capture the value of stud_name and studRef for each iteration
+            let studRef;
 
-        const promise = Promise.all([getDoc(studentRef), getDoc(classRef)]).then(
-          ([studentDoc, classDoc]) => {
-            if (
-              studentDoc.exists &&
-              classDoc.exists &&
-              classDoc.data().class_name_sec === selectedClass
-            ) {
-              stud_name = studentDoc.data().stud_name;
-              const class_name_sec = classDoc.data().class_name_sec;
-              studRef = studClassDoc.ref.path;
-              studRefs.push(studRef);
-              stud_names.push({ stud_name, studRef });
-              console.log(stud_name, class_name_sec);
+            const promise = Promise.all([getDoc(studentRef), getDoc(classRef)]).then(
+              ([studentDoc, classDoc]) => {
+                if (
+                  studentDoc.exists &&
+                  classDoc.exists &&
+                  classDoc.data().class_name_sec === selectedClass
+                ) {
+                  stud_name = studentDoc.data().stud_name;
+                  const class_name_sec = classDoc.data().class_name_sec;
+                  studRef = studClassDoc.ref.path;
+                  studRefs.push(studRef);
+                  stud_names.push({ stud_name, studRef });
+                  console.log(stud_name, class_name_sec);
 
-              // Add the promise to the filteredPromises array
-              filteredPromises.push({ stud_name, class_name_sec, studRef });
-            }
-          }
-        );
+                  // Add the promise to the filteredPromises array
+                  filteredPromises.push({ stud_name, class_name_sec, studRef });
+                }
+              }
+            );
 
-        promises.push(promise);
-      });
+            promises.push(promise);
+          });
 
-      // Wait for all promises to resolve before moving to the next step
-      return Promise.all(promises).then(() => filteredPromises);
-    })
-    .then((filteredPromises) => {
-      // Now, process attendanceRef documents
-      console.log("filtered:", filteredPromises);
-      return getDocs(attendanceRef);
-    })
-    .then((attendanceSnapshot) => {
-      // Process attendanceRef data here
+          // Wait for all promises to resolve before moving to the next step
+          return Promise.all(promises).then(() => filteredPromises);
+        })
+        .then((filteredPromises) => {
+          // Now, process attendanceRef documents
+          console.log("filtered:", filteredPromises);
+          return getDocs(attendanceRef);
+        })
+        .then((attendanceSnapshot) => {
+          // Process attendanceRef data here
 
-      if (studRefs.length > 0) {
-        const attendancePromises = [];
+          if (studRefs.length > 0) {
+            // Now, process attendanceRef documents for the selected date
+            const selectedDateStart = new Date(currentDate);
+            selectedDateStart.setHours(0, 0, 0, 0);
+            console.log(selectedDateStart);
 
-        attendanceSnapshot.forEach((attendanceDoc) => {
-          const attendanceData = attendanceDoc.data();
-          const studclassRefData = attendanceData.student_class;
+            const selectedDateEnd = new Date(currentDate);
+            selectedDateEnd.setHours(23, 59, 59, 999);
 
-          if (studRefs.includes(studclassRefData.path)) {
-            const date = new Date(attendanceData.date_time.toDate());
+            const attendancePromises = [];
 
-            // Find the corresponding stud_name and studRef for the current attendance
-            matchingStudIndex = studRefs.indexOf(studclassRefData.path);
-            const { stud_name, studRef } = stud_names[matchingStudIndex];
-            console.log(stud_names[matchingStudIndex]);
+            attendanceSnapshot.forEach((attendanceDoc) => {
+              const attendanceData = attendanceDoc.data();
+              const studclassRefData = attendanceData.student_class;
+              const attendanceDateTime = attendanceData.date_time.toDate();
 
-            // Format the date and time
-            const formattedDate = date.toLocaleDateString(); // Adjust the format based on your preference
-            const formattedTime = date.toLocaleTimeString(); // Adjust the format based on your preference
+              if (
+                studRefs.includes(studclassRefData.path) &&
+                attendanceDateTime >= selectedDateStart &&
+                attendanceDateTime <= selectedDateEnd) {
+                  const date = new Date(attendanceData.date_time.toDate());
 
-            const time_in = `${formattedTime}`;
-            const status = attendanceData.status;
-            console.log(stud_name, time_in, status);
+                  // Find the corresponding stud_name and studRef for the current attendance
+                  matchingStudIndex = studRefs.indexOf(studclassRefData.path);
+                  const { stud_name, studRef } = stud_names[matchingStudIndex];
+                  console.log(stud_names[matchingStudIndex]);
 
-            const row = `<tr>
+                  // Format the date and time
+                  const formattedDate = date.toLocaleDateString(); // Adjust the format based on your preference
+                  const formattedTime = date.toLocaleTimeString(); // Adjust the format based on your preference
+
+                  const time_in = `${formattedTime}`;
+                  const status = attendanceData.status;
+                  console.log(stud_name, time_in, status);
+
+                  const row = `<tr>
               <td>${counter}</td>
               <td>${stud_name}</td>
               <td>${time_in}</td>
               <td>${status}</td>
             </tr>`;
 
-            // Push a promise for each row to the attendancePromises array
-            attendancePromises.push(Promise.resolve(row));
+                  // Push a promise for each row to the attendancePromises array
+                  attendancePromises.push(Promise.resolve(row));
 
-            // Increment the counter for the next iteration
-            counter++;
-          } else {
-            console.log("iterating");
-            counter++;
-          }
+                  // Increment the counter for the next iteration
+                  counter++;
+                } else {
+                  const time_in = "";
+                  const status = "";
+                  const row = `<tr>
+              <td>${counter}</td>
+              <td>${stud_name}</td>
+              <td>${time_in}</td>
+              <td>${status}</td>
+            </tr>`;
+                  attendancePromises.push(Promise.resolve(row));
+                  counter++;
+                }
+              });
+
+              // Wait for all attendancePromises to resolve before updating the table
+              console.log(Promise.all(attendancePromises));
+              return Promise.all(attendancePromises);
+            }
+        })
+        .then((rows) => {
+          // Update the table with the resolved rows
+          tableBody.innerHTML += rows.join('');
+        })
+        .catch((error) => {
+          console.error('Error getting documents: ', error);
         });
+    }
 
-        // Wait for all attendancePromises to resolve before updating the table
-        console.log(Promise.all(attendancePromises));
-        return Promise.all(attendancePromises);
-      }
-    })
-    .then((rows) => {
-      // Update the table with the resolved rows
-      tableBody.innerHTML += rows.join('');
-    })
-    .catch((error) => {
-      console.error('Error getting documents: ', error);
-    });
-}
+    
+    // Function to increment the date
+    window.incrementDate = function () {
+      currentDate.setDate(currentDate.getDate() + 1);
+      displayCurrentDate();
+      retrieveAndDisplayData(selectedClass);
+    }
+
+
+    // Function to decrement the date
+    window.decrementDate = function () {
+      currentDate.setDate(currentDate.getDate() - 1);
+      displayCurrentDate();
+      retrieveAndDisplayData(selectedClass);
+    }
 
 
   });
-
 
 
   document.getElementById('logout').style.display = 'block';
