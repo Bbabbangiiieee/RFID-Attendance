@@ -31,7 +31,7 @@
             <div class="input">
                 <!-- Username Field -->
                 <div class="input">
-                    <input type="text" name="username" id="id_username" placeholder="" required>
+                    <input type="text" name="email" id="id_email" placeholder="" required>
                     <label for="" class="floating-label">Email</label>
                     <span class="material-icons">person</span>
                 </div>
@@ -42,7 +42,7 @@
                     <label for="" class="floating-label">Password</label>
                     <span class="material-icons">lock</span>
                 </div>
-                <button type="submit" style="margin-top: 50px;" class="btn-primary" id="login">Login</button>
+                <button type="button" style="margin-top: 50px;" class="btn-primary" id="login">Login</button>
                 <p class="register-link">Forgot Password? <a href="forgot-password.html">Click here</a></p>
             </div>
         </form>
@@ -52,24 +52,24 @@
 </html>
 
 <script type="module">
-    // Import the functions you need from the SDKs you need
-    import { initializeApp } from "firebase/app";
-    import { getAnalytics } from "firebase/analytics";
-    import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-analytics.js";
+    import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js";
     // TODO: Add SDKs for Firebase products that you want to use
     // https://firebase.google.com/docs/web/setup#available-libraries
 
     // Your web app's Firebase configuration
     // For Firebase JS SDK v7.20.0 and later, measurementId is optional
     const firebaseConfig = {
-        apiKey: "AIzaSyDx2ywWs3VCoW30xVUXFGc5NTzyFRdrknM",
-        authDomain: "rfid-attendance-82f39.firebaseapp.com",
-        projectId: "rfid-attendance-82f39",
-        storageBucket: "rfid-attendance-82f39.appspot.com",
-        messagingSenderId: "116622604096",
-        appId: "1:116622604096:web:3a3615f542fa3fe0e66ca5",
-        measurementId: "G-66SGGMTWRX"
+        apiKey: "AIzaSyAlorTSQlN1-GfABuQgbUGQi5Fd3tg9T3E",
+        authDomain: "test-de11b.firebaseapp.com",
+        projectId: "test-de11b",
+        storageBucket: "test-de11b.appspot.com",
+        messagingSenderId: "731834875968",
+        appId: "1:731834875968:web:939410069881f707c31fa5",
+        measurementId: "G-6EDC6FST60"
     };
 
     // Initialize Firebase
@@ -78,14 +78,9 @@
     const auth = getAuth();
     console.log(app);
 
-    // Log any initialization errors
-    app.catch((error) => {
-        console.error("Firebase initialization error:", error);
-    });
-
-    // ----- Login code start	  
+    //----- Login code start	  
     document.getElementById("login").addEventListener("click", function () {
-        var email = document.getElementById("id_username").value;
+        var email = document.getElementById("id_email").value;
         var password = document.getElementById("id_password").value;
 
         signInWithEmailAndPassword(auth, email, password).then((userCredential) => {
@@ -94,6 +89,7 @@
             console.log(user);
             alert(user.email + " Login successfully!!!");
             window.location.href = 'dashboard.html';
+
             // ...
         })
             .catch((error) => {
@@ -103,6 +99,5 @@
                 alert(errorMessage);
             });
     });
-    // ----- End
-
+    //----- End
 </script>
