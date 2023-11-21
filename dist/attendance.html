@@ -442,6 +442,7 @@
     window.incrementDate = function () {
       currentDate.setDate(currentDate.getDate() + 1);
       displayCurrentDate();
+      tableBody.innerHTML = '';
       retrieveAndDisplayData(selectedClass);
     }
 
@@ -450,6 +451,7 @@
     window.decrementDate = function () {
       currentDate.setDate(currentDate.getDate() - 1);
       displayCurrentDate();
+      tableBody.innerHTML = '';
       retrieveAndDisplayData(selectedClass);
     }
 
