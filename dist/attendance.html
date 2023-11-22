@@ -306,6 +306,8 @@
       // Call the function to retrieve and display data based on the selected class
       retrieveAndDisplayData(selectedClass);
     }
+    // Initialize a flag to check if DataTable is already initialized
+    let isDataTableInitialized = false;
 
     // Function to retrieve and display data based on the selected class
     function retrieveAndDisplayData(selectedClass) {
@@ -390,69 +392,83 @@
             const filteredAttendanceData = filteredAttendance;
             return filteredAttendanceData;
           }).then((filteredAttendanceData) => {
-        
-          const rows = [];
-          for (const attendance of filteredAttendanceData) {
-            // Now, process attendanceRef documents for the selected date
-            const selectedDateStart = new Date(currentDate);
-            selectedDateStart.setHours(0, 0, 0, 0);
-            const selectedDateEnd = new Date(currentDate);
-            selectedDateEnd.setHours(23, 59, 59, 999);
 
-            const student = attendance.student;
-            const student_class = attendance.att_stud_class;
-            const date_time = attendance.date_time.toDate();
-            const status = attendance.status;
+            const rows = [];
+            for (const attendance of filteredAttendanceData) {
+              // Now, process attendanceRef documents for the selected date
+              const selectedDateStart = new Date(currentDate);
+              selectedDateStart.setHours(0, 0, 0, 0);
+              const selectedDateEnd = new Date(currentDate);
+              selectedDateEnd.setHours(23, 59, 59, 999);
 
-            if (studRefs.includes(student_class) &&
-              date_time >= selectedDateStart &&
-              date_time <= selectedDateEnd) {
+              const student = attendance.student;
+              const student_class = attendance.att_stud_class;
+              const date_time = attendance.date_time.toDate();
+              const status = attendance.status;
+
+              if (studRefs.includes(student_class) &&
+                date_time >= selectedDateStart &&
+                date_time <= selectedDateEnd) {
                 const date = new Date(attendance.date_time.toDate());
-                
 
-              // Format the date and time
-              const formattedDate = date.toLocaleDateString(); // Adjust the format based on your preference
-              const formattedTime = date.toLocaleTimeString(); // Adjust the format based on your preference
 
-              const time_in = `${formattedTime}`;
-              console.log(stud_name, time_in, status);
+                // Format the date and time
+                const formattedDate = date.toLocaleDateString(); // Adjust the format based on your preference
+                const formattedTime = date.toLocaleTimeString(); // Adjust the format based on your preference
 
-              const row = `<tr>
+                const time_in = `${formattedTime}`;
+                console.log(stud_name, time_in, status);
+
+                const row = `<tr>
                     <td>${counter}</td>
                     <td>${student}</td>
                     <td>${time_in}</td>
                     <td>${status}</td>
                   </tr>`;
 
-              // Push a promise for each row to the attendancePromises array
-              rows.push(row);
+                // Push a promise for each row to the attendancePromises array
+                rows.push(row);
 
-              // Increment the counter for the next iteration
-              counter++;
-            } else {
-              const time_in = "";
-              const status = "";
-              const row = `<tr>
+                // Increment the counter for the next iteration
+                counter++;
+              } else {
+                const time_in = "";
+                const status = "";
+                const row = `<tr>
                     <td>${counter}</td>
                     <td>${student}</td>
                     <td>${time_in}</td>
                     <td>${status}</td>
                   </tr>`;
-              rows.push(row);
-              counter++;
+                rows.push(row);
+                counter++;
+              }
             }
-          }
-          return rows;
+            return rows;
+          })
+            .then((rows) => {
+              tableBody.innerHTML = rows.join('');
+              if (!isDataTableInitialized){
+                $(document).ready(function () {
+                $('#myTable').DataTable({
+                  "aLengthMenu": [[3, 5, 10, 25, -1], [3, 5, 10, 25, "All"]],
+                  "iDisplayLength": 3
+                });
+
+              });
+              }
+
+              isDataTableInitialized = true;
+              
+            })
+            .catch((error) => {
+              console.error('Error getting documents: ', error);
+            });
         })
-        .then((rows) => {
-          // Update the table with the resolved rows
-          tableBody.innerHTML += rows.join('');
-        })
-        .catch((error) => {
-          console.error('Error getting documents: ', error);
-        });
-      })
+
     }
+
+
 
 
     // Function to increment the date
@@ -471,16 +487,6 @@
       tableBody.innerHTML = '';
       retrieveAndDisplayData(selectedClass);
     }
-
-    $(document).ready(function () {
-      $('#myTable').DataTable({
-        "aLengthMenu": [[3, 5, 10, 25, -1], [3, 5, 10, 25, "All"]],
-        "iDisplayLength": 3
-      });
-
-    });
-
-
   });
 
 
