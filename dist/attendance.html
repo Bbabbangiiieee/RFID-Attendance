@@ -244,7 +244,7 @@
   // Import the functions you need from the SDKs you need
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-analytics.js";
-  import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js";
+  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js";
   import { getFirestore, collection, addDoc, connectFirestoreEmulator, query, getDocs, getDoc, updateDoc, setDoc, doc, onSnapshot, deleteDoc, orderBy } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js';
   // TODO: Add SDKs for Firebase products that you want to use
   // https://firebase.google.com/docs/web/setup#available-libraries
@@ -268,13 +268,6 @@
   const auth = getAuth();
   console.log(app);
 
-  // initializing references
-  const userId = "5Vk3qE8cJeTVJGyIwOrXWdD9ELM2";
-  const userRef = collection(db, "Attendance_Monitoring");
-  const stud_classRef = collection(userRef, userId, "stud_class");
-  const attendanceRef = collection(userRef, userId, "attendance"); // Assuming the collection is named 'attendance'
-  const classListRef = collection(userRef, userId, "class_list");
-
   document.addEventListener('DOMContentLoaded', function () {
     // Assuming your dropdown has the ID "myDropdown"
     const dropdown = document.getElementById("myDropdown");
@@ -282,292 +275,319 @@
     let counter = 1;
     let i = 0;
     let selectedClass, studRefs = [], matchingStudIndex; // Variable to store the selected class
+    let userId, userRef, stud_classRef, attendanceRef, classListRef;
 
-    // Fetch data and populate options
-    getDocs(classListRef).then((classListRefSnapshot) => {
-      // Log the fetched data to the console for debugging
-      console.log("Fetched data:", classListRefSnapshot);
 
-      // Array to store the options
-      let optionsArray = [];
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        // User is signed in.
+        const userUid = user.uid;
+        console.log('User UID:', userUid);
 
-      classListRefSnapshot.forEach((classListDoc) => {
-        const classListData = classListDoc.data().class_name_sec;
+        // Now you can use the userUid in your queries
+        userId = userUid; // Use this userId in your collections
+        userRef = collection(db, "Attendance_Monitoring");
+        stud_classRef = collection(userRef, userId, "stud_class");
+        attendanceRef = collection(userRef, userId, "attendance");
+        classListRef = collection(userRef, userId, "class_list");
 
-        // Add each option to the array
-        optionsArray.push(classListData);
-      });
+        // Continue with the rest of your code...
 
-      // Populate dropdown with options
-      populateDropdown(optionsArray);
-    });
 
-    // Function to populate the dropdown with options
-    function populateDropdown(options) {
-      // Clear existing options
-      dropdown.innerHTML = "";
 
-      // Add new options
-      options.forEach((option) => {
-        const optionElement = document.createElement("option");
-        optionElement.text = option;
-        optionElement.value = option; // Set the value attribute
-        dropdown.appendChild(optionElement);
-      });
+        // Fetch data and populate options
+        getDocs(classListRef).then((classListRefSnapshot) => {
+          // Log the fetched data to the console for debugging
+          console.log("Fetched data:", classListRefSnapshot);
 
-      // Print the value of the default option
-      selectedClass = dropdown.value;
+          // Array to store the options
+          let optionsArray = [];
 
-      // Add event listener to the dropdown
-      dropdown.addEventListener("change", function () {
-        selectedClass = this.value;
-        handleValueChanged(selectedClass);
-      });
+          classListRefSnapshot.forEach((classListDoc) => {
+            const classListData = classListDoc.data().class_name_sec;
 
-      // Call the function to retrieve and display data based on the default selected class
-      retrieveAndDisplayData(selectedClass);
-    }
-
-    // Function to handle the changed value
-    function handleValueChanged(updatedValue) {
-      selectedClass = updatedValue;
-      tableBody.innerHTML = '';
-
-      // Call the function to retrieve and display data based on the selected class
-      retrieveAndDisplayData(selectedClass);
-    }
-    // Initialize a flag to check if DataTable is already initialized
-    let isDataTableInitialized = false;
-    let myTable;
-
-    function sortByStudentName(a, b) {
-      const nameA = a.student.toUpperCase(); // Convert names to uppercase for case-insensitive sorting
-      const nameB = b.student.toUpperCase();
-
-      if (nameA < nameB) {
-        return -1;
-      }
-      if (nameA > nameB) {
-        return 1;
-      }
-      return 0;
-    }
-
-    // Function to retrieve and display data based on the selected class
-    function retrieveAndDisplayData(selectedClass) {
-      // Reset studRefs and counter for each call
-      let studRefs = [];
-      let counter = 1;
-      let stud_names = []; // Declare an array to store stud_names and studRefs
-      let stud_name; // Declare stud_name outside the loop
-      let class_name_sec;
-      const filteredPromises = [];
-      const filteredAttendance = [];
-
-      // Retrieve data from the stud_class collection based on the selectedClass
-      getDocs(stud_classRef)
-        .then((studClassSnapshot) => {
-          const promises = [];
-
-          studClassSnapshot.forEach((studClassDoc) => {
-            const studClassData = studClassDoc.data();
-            const studentRef = studClassData.student;
-            const classRef = studClassData.class;
-
-            // Use a closure to capture the value of stud_name and studRef for each iteration
-            let studRef;
-
-            const promise = Promise.all([getDoc(studentRef), getDoc(classRef)]).then(
-              ([studentDoc, classDoc]) => {
-                if (
-                  studentDoc.exists &&
-                  classDoc.exists &&
-                  classDoc.data().class_name_sec === selectedClass
-                ) {
-                  stud_name = studentDoc.data().stud_name;
-                  const class_name_sec = classDoc.data().class_name_sec;
-                  studRef = studClassDoc.ref.path;
-                  studRefs.push(studRef);
-                  stud_names.push({ stud_name, studRef });
-                  console.log(stud_name, class_name_sec);
-
-                  // Add the promise to the filteredPromises array
-                  filteredPromises.push({ stud_name, class_name_sec, studRef });
-                }
-              }
-            );
-
-            promises.push(promise);
+            // Add each option to the array
+            optionsArray.push(classListData);
           });
 
-          // Wait for all promises to resolve before moving to the next step
-          return Promise.all(promises).then(() => filteredPromises);
-        })
-        .then((filteredPromises) => {
-          // Now, process attendanceRef documents
-          console.log("filtered:", filteredPromises);
+          // Populate dropdown with options
+          populateDropdown(optionsArray);
+        });
 
-          getDocs(attendanceRef).then((attendanceSnapshot) => {
-            attendanceSnapshot.forEach((attendanceDoc) => {
-              const attendanceData = attendanceDoc.data();
-              const att_stud_class = attendanceData.student_class.path;
-              const status = attendanceData.status;
-              const date_time = attendanceData.date_time;
-              console.log("Attendance Data:", att_stud_class, status, date_time);
-              let studentAdded, existingIndex;
+        // Function to populate the dropdown with options
+        function populateDropdown(options) {
+          // Clear existing options
+          dropdown.innerHTML = "";
 
-              
+          // Add new options
+          options.forEach((option) => {
+            const optionElement = document.createElement("option");
+            optionElement.text = option;
+            optionElement.value = option; // Set the value attribute
+            dropdown.appendChild(optionElement);
+          });
 
-              for (const filteredPromise of filteredPromises) {
-                const studRefer = filteredPromise.studRef;
-                const student = filteredPromise.stud_name;
-                const nonstat = "";
-                const nondate = "";
+          // Print the value of the default option
+          selectedClass = dropdown.value;
 
-                const existingIndex = filteredAttendance.findIndex(item => item.student === student);
+          // Add event listener to the dropdown
+          dropdown.addEventListener("change", function () {
+            selectedClass = this.value;
+            handleValueChanged(selectedClass);
+          });
 
-                if (att_stud_class === studRefer) {
-                  // If att_stud_class === studRefer, update the array
-                  if (existingIndex !== -1) {
-                    filteredAttendance[existingIndex].att_stud_class = att_stud_class;
-                    filteredAttendance[existingIndex].status = status;
-                    filteredAttendance[existingIndex].date_time = date_time;
-                  } else {
-                    // If the student is not in the array, add a new entry with the provided values
-                    filteredAttendance.push({
-                      student: student,
-                      att_stud_class: att_stud_class,
-                      status: status,
-                      date_time: date_time
-                    });
+          // Call the function to retrieve and display data based on the default selected class
+          retrieveAndDisplayData(selectedClass);
+        }
+
+        // Function to handle the changed value
+        function handleValueChanged(updatedValue) {
+          selectedClass = updatedValue;
+          tableBody.innerHTML = '';
+
+          // Call the function to retrieve and display data based on the selected class
+          retrieveAndDisplayData(selectedClass);
+        }
+        // Initialize a flag to check if DataTable is already initialized
+        let isDataTableInitialized = false;
+        let myTable;
+
+        function sortByStudentName(a, b) {
+          const nameA = a.student.toUpperCase(); // Convert names to uppercase for case-insensitive sorting
+          const nameB = b.student.toUpperCase();
+
+          if (nameA < nameB) {
+            return -1;
+          }
+          if (nameA > nameB) {
+            return 1;
+          }
+          return 0;
+        }
+
+        // Function to retrieve and display data based on the selected class
+        function retrieveAndDisplayData(selectedClass) {
+          // Reset studRefs and counter for each call
+          let studRefs = [];
+          let counter = 1;
+          let stud_names = []; // Declare an array to store stud_names and studRefs
+          let stud_name; // Declare stud_name outside the loop
+          let class_name_sec;
+          const filteredPromises = [];
+          const filteredAttendance = [];
+
+          // Retrieve data from the stud_class collection based on the selectedClass
+          getDocs(stud_classRef)
+            .then((studClassSnapshot) => {
+              const promises = [];
+
+              studClassSnapshot.forEach((studClassDoc) => {
+                const studClassData = studClassDoc.data();
+                const studentRef = studClassData.student;
+                const classRef = studClassData.class;
+
+                // Use a closure to capture the value of stud_name and studRef for each iteration
+                let studRef;
+
+                const promise = Promise.all([getDoc(studentRef), getDoc(classRef)]).then(
+                  ([studentDoc, classDoc]) => {
+                    if (
+                      studentDoc.exists &&
+                      classDoc.exists &&
+                      classDoc.data().class_name_sec === selectedClass
+                    ) {
+                      stud_name = studentDoc.data().stud_name;
+                      const class_name_sec = classDoc.data().class_name_sec;
+                      studRef = studClassDoc.ref.path;
+                      studRefs.push(studRef);
+                      stud_names.push({ stud_name, studRef });
+                      console.log(stud_name, class_name_sec);
+
+                      // Add the promise to the filteredPromises array
+                      filteredPromises.push({ stud_name, class_name_sec, studRef });
+                    }
                   }
-                } else {
-                  // If att_stud_class !== studRefer and the student is not in the array, add a new entry with default values
-                  if (existingIndex === -1) {
-                    filteredAttendance.push({
-                      student: student,
-                      att_stud_class: att_stud_class,
-                      status: nonstat,
-                      date_time: nondate
-                    });
-                  }
-                  // If att_stud_class !== studRefer and the student is already in the array, do nothing
-                }
+                );
 
-                console.log("existingIndex:", existingIndex);
-                console.log("filteredAttendance:", filteredAttendance);
-              }
-
-            });
-            const filteredAttendanceData = filteredAttendance;
-            return filteredAttendanceData;
-          }).then((filteredAttendanceData) => {
-
-            // Sort the filteredAttendanceData array by student name
-            filteredAttendanceData.sort(sortByStudentName);
-            const rows = [];
-            for (const attendance of filteredAttendanceData) {
-              // Now, process attendanceRef documents for the selected date
-              const selectedDateStart = new Date(currentDate);
-              selectedDateStart.setHours(0, 0, 0, 0);
-              const selectedDateEnd = new Date(currentDate);
-              selectedDateEnd.setHours(23, 59, 59, 999);
-
-              const student = attendance.student;
-              const student_class = attendance.att_stud_class;
-              const status = attendance.status;
-              let date_time;
-
-              if (!attendance.date_time) {
-                date_time = 0;
-              } else {
-                date_time = attendance.date_time.toDate();
-              }
-
-              if (studRefs.includes(student_class) &&
-                date_time >= selectedDateStart &&
-                date_time <= selectedDateEnd) {
-                const date = new Date(attendance.date_time.toDate());
-
-
-                // Format the date and time
-                const formattedDate = date.toLocaleDateString(); // Adjust the format based on your preference
-                const formattedTime = date.toLocaleTimeString(); // Adjust the format based on your preference
-
-                const time_in = `${formattedTime}`;
-                console.log(stud_name, time_in, status);
-
-                const row = `<tr>
-                    <td>${counter}</td>
-                    <td>${student}</td>
-                    <td>${time_in}</td>
-                    <td>${status}</td>
-                  </tr>`;
-
-                // Push a promise for each row to the attendancePromises array
-                rows.push(row);
-
-                // Increment the counter for the next iteration
-                counter++;
-              } else {
-                const time_in = "";
-                const status = "";
-                const row = `<tr>
-                    <td>${counter}</td>
-                    <td>${student}</td>
-                    <td>${time_in}</td>
-                    <td>${status}</td>
-                  </tr>`;
-                rows.push(row);
-                counter++;
-              }
-            }
-            return rows;
-          })
-            .then((rows) => {
-
-
-              // Clear existing DataTable instance and destroy it before initializing a new one
-              if (myTable) {
-                myTable.clear().destroy();
-              }
-              tableBody.innerHTML = rows.join('');
-
-
-              $(document).ready(function () {
-                myTable = $('#myTable').DataTable({
-                  "aLengthMenu": [[10, 25, -1], [10, 25, "All"]],
-                  "iDisplayLength": 10
-                });
-                isDataTableInitialized = true;
+                promises.push(promise);
               });
+
+              // Wait for all promises to resolve before moving to the next step
+              return Promise.all(promises).then(() => filteredPromises);
             })
-            .catch((error) => {
-              console.error('Error getting documents: ', error);
-            });
-        })
+            .then((filteredPromises) => {
+              // Now, process attendanceRef documents
+              console.log("filtered:", filteredPromises);
 
-    }
-
-
-
-
-    // Function to increment the date
-    window.incrementDate = function () {
-      currentDate.setDate(currentDate.getDate() + 1);
-      displayCurrentDate();
-      tableBody.innerHTML = '';
-      retrieveAndDisplayData(selectedClass);
-    }
+              getDocs(attendanceRef).then((attendanceSnapshot) => {
+                attendanceSnapshot.forEach((attendanceDoc) => {
+                  const attendanceData = attendanceDoc.data();
+                  const att_stud_class = attendanceData.student_class.path;
+                  const status = attendanceData.status;
+                  const date_time = attendanceData.date_time;
+                  console.log("Attendance Data:", att_stud_class, status, date_time);
+                  let studentAdded, existingIndex;
 
 
-    // Function to decrement the date
-    window.decrementDate = function () {
-      currentDate.setDate(currentDate.getDate() - 1);
-      displayCurrentDate();
-      tableBody.innerHTML = '';
-      retrieveAndDisplayData(selectedClass);
-    }
+
+                  for (const filteredPromise of filteredPromises) {
+                    const studRefer = filteredPromise.studRef;
+                    const student = filteredPromise.stud_name;
+                    const nonstat = "";
+                    const nondate = "";
+
+                    const existingIndex = filteredAttendance.findIndex(item => item.student === student);
+
+                    if (att_stud_class === studRefer) {
+                      // If att_stud_class === studRefer, update the array
+                      if (existingIndex !== -1) {
+                        filteredAttendance[existingIndex].att_stud_class = att_stud_class;
+                        filteredAttendance[existingIndex].status = status;
+                        filteredAttendance[existingIndex].date_time = date_time;
+                      } else {
+                        // If the student is not in the array, add a new entry with the provided values
+                        filteredAttendance.push({
+                          student: student,
+                          att_stud_class: att_stud_class,
+                          status: status,
+                          date_time: date_time
+                        });
+                      }
+                    } else {
+                      // If att_stud_class !== studRefer and the student is not in the array, add a new entry with default values
+                      if (existingIndex === -1) {
+                        filteredAttendance.push({
+                          student: student,
+                          att_stud_class: att_stud_class,
+                          status: nonstat,
+                          date_time: nondate
+                        });
+                      }
+                      // If att_stud_class !== studRefer and the student is already in the array, do nothing
+                    }
+
+                    console.log("existingIndex:", existingIndex);
+                    console.log("filteredAttendance:", filteredAttendance);
+                  }
+
+                });
+                const filteredAttendanceData = filteredAttendance;
+                return filteredAttendanceData;
+              }).then((filteredAttendanceData) => {
+
+                // Sort the filteredAttendanceData array by student name
+                filteredAttendanceData.sort(sortByStudentName);
+                const rows = [];
+                for (const attendance of filteredAttendanceData) {
+                  // Now, process attendanceRef documents for the selected date
+                  const selectedDateStart = new Date(currentDate);
+                  selectedDateStart.setHours(0, 0, 0, 0);
+                  const selectedDateEnd = new Date(currentDate);
+                  selectedDateEnd.setHours(23, 59, 59, 999);
+
+                  const student = attendance.student;
+                  const student_class = attendance.att_stud_class;
+                  const status = attendance.status;
+                  let date_time;
+
+                  if (!attendance.date_time) {
+                    date_time = 0;
+                  } else {
+                    date_time = attendance.date_time.toDate();
+                  }
+
+                  if (studRefs.includes(student_class) &&
+                    date_time >= selectedDateStart &&
+                    date_time <= selectedDateEnd) {
+                    const date = new Date(attendance.date_time.toDate());
+
+
+                    // Format the date and time
+                    const formattedDate = date.toLocaleDateString(); // Adjust the format based on your preference
+                    const formattedTime = date.toLocaleTimeString(); // Adjust the format based on your preference
+
+                    const time_in = `${formattedTime}`;
+                    console.log(stud_name, time_in, status);
+
+                    const row = `<tr>
+                    <td>${counter}</td>
+                    <td>${student}</td>
+                    <td>${time_in}</td>
+                    <td>${status}</td>
+                  </tr>`;
+
+                    // Push a promise for each row to the attendancePromises array
+                    rows.push(row);
+
+                    // Increment the counter for the next iteration
+                    counter++;
+                  } else {
+                    const time_in = "";
+                    const status = "";
+                    const row = `<tr>
+                    <td>${counter}</td>
+                    <td>${student}</td>
+                    <td>${time_in}</td>
+                    <td>${status}</td>
+                  </tr>`;
+                    rows.push(row);
+                    counter++;
+                  }
+                }
+                return rows;
+              })
+                .then((rows) => {
+
+
+                  // Clear existing DataTable instance and destroy it before initializing a new one
+                  if (myTable) {
+                    myTable.clear().destroy();
+                  }
+                  tableBody.innerHTML = rows.join('');
+
+
+                  $(document).ready(function () {
+                    myTable = $('#myTable').DataTable({
+                      "aLengthMenu": [[10, 25, -1], [10, 25, "All"]],
+                      "iDisplayLength": 10
+                    });
+                    isDataTableInitialized = true;
+                  });
+                })
+                .catch((error) => {
+                  console.error('Error getting documents: ', error);
+                });
+            })
+
+        }
+
+        // Function to increment the date
+        window.incrementDate = function () {
+          currentDate.setDate(currentDate.getDate() + 1);
+          displayCurrentDate();
+          tableBody.innerHTML = '';
+          retrieveAndDisplayData(selectedClass);
+        }
+
+
+        // Function to decrement the date
+        window.decrementDate = function () {
+          currentDate.setDate(currentDate.getDate() - 1);
+          displayCurrentDate();
+          tableBody.innerHTML = '';
+          retrieveAndDisplayData(selectedClass);
+        }
+
+      } else {
+        // User is signed out.
+        console.log('User is signed out.');
+        // You might want to redirect the user to the login page or show a login form.
+      }
+    });
+
+
+
+
   });
 
 
