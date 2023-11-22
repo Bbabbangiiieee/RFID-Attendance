@@ -25,7 +25,6 @@
   <!--Scripts-->
   <script src="../assets/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js/dist/Chart.min.js"></script>
-  <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
     // Initialize the current date
     const currentDate = new Date();
@@ -183,8 +182,10 @@
 </body>
 
 </html>
+<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" charset="utf8"
+  src="https://cdn.datatables.net/1.12.0/js/jquery.dataTables.min.js"></script>
 
-<script src="https://cdn.datatables.net/1.12.0/js/jquery.dataTables.min.js"></script>
 <script>
   const toggleButton = document.querySelector('.btn-toggle');
   const sidebar = document.querySelector('.sidebar'); // Assuming your sidebar has an ID of "sidebar"
@@ -249,6 +250,7 @@
     const dropdown = document.getElementById("myDropdown");
     const tableBody = document.getElementById('tableBody');
     let counter = 1;
+    let i = 0;
     let selectedClass, studRefs = [], matchingStudIndex; // Variable to store the selected class
 
     // Fetch data and populate options
@@ -314,6 +316,7 @@
       let stud_name; // Declare stud_name outside the loop
       let class_name_sec;
       const filteredPromises = [];
+      const filteredAttendance = [];
 
       // Retrieve data from the stud_class collection based on the selectedClass
       getDocs(stud_classRef)
@@ -357,76 +360,89 @@
         .then((filteredPromises) => {
           // Now, process attendanceRef documents
           console.log("filtered:", filteredPromises);
-          return getDocs(attendanceRef);
-        })
-        .then((attendanceSnapshot) => {
-          // Process attendanceRef data here
 
-          if (studRefs.length > 0) {
+          getDocs(attendanceRef).then((attendanceSnapshot) => {
+            attendanceSnapshot.forEach((attendanceDoc) => {
+              const attendanceData = attendanceDoc.data();
+              const att_stud_class = attendanceData.student_class.path;
+              const status = attendanceData.status;
+              const date_time = attendanceData.date_time;
+              console.log("Attendance Data:", att_stud_class, status, date_time);
+
+
+              for (const filteredPromise of filteredPromises) {
+                const studRefer = filteredPromise.studRef;
+                const student = filteredPromise.stud_name;
+
+                if (att_stud_class === studRefer) {
+                  console.log("Attendance Doc:", attendanceDoc);
+                  // Add the attendance data to the filteredAttendance array
+                  filteredAttendance.push({
+                    student: student,
+                    att_stud_class: att_stud_class,
+                    status: status,
+                    date_time: date_time
+                  });
+                }
+
+              }
+            });
+            const filteredAttendanceData = filteredAttendance;
+            return filteredAttendanceData;
+          }).then((filteredAttendanceData) => {
+        
+          const rows = [];
+          for (const attendance of filteredAttendanceData) {
             // Now, process attendanceRef documents for the selected date
             const selectedDateStart = new Date(currentDate);
             selectedDateStart.setHours(0, 0, 0, 0);
-            console.log(selectedDateStart);
-
             const selectedDateEnd = new Date(currentDate);
             selectedDateEnd.setHours(23, 59, 59, 999);
 
-            const attendancePromises = [];
+            const student = attendance.student;
+            const student_class = attendance.att_stud_class;
+            const date_time = attendance.date_time.toDate();
+            const status = attendance.status;
 
-            attendanceSnapshot.forEach((attendanceDoc) => {
-              const attendanceData = attendanceDoc.data();
-              const studclassRefData = attendanceData.student_class;
-              const attendanceDateTime = attendanceData.date_time.toDate();
+            if (studRefs.includes(student_class) &&
+              date_time >= selectedDateStart &&
+              date_time <= selectedDateEnd) {
+                const date = new Date(attendance.date_time.toDate());
+                
 
-              if (
-                studRefs.includes(studclassRefData.path) &&
-                attendanceDateTime >= selectedDateStart &&
-                attendanceDateTime <= selectedDateEnd) {
-                  const date = new Date(attendanceData.date_time.toDate());
+              // Format the date and time
+              const formattedDate = date.toLocaleDateString(); // Adjust the format based on your preference
+              const formattedTime = date.toLocaleTimeString(); // Adjust the format based on your preference
 
-                  // Find the corresponding stud_name and studRef for the current attendance
-                  matchingStudIndex = studRefs.indexOf(studclassRefData.path);
-                  const { stud_name, studRef } = stud_names[matchingStudIndex];
-                  console.log(stud_names[matchingStudIndex]);
+              const time_in = `${formattedTime}`;
+              console.log(stud_name, time_in, status);
 
-                  // Format the date and time
-                  const formattedDate = date.toLocaleDateString(); // Adjust the format based on your preference
-                  const formattedTime = date.toLocaleTimeString(); // Adjust the format based on your preference
+              const row = `<tr>
+                    <td>${counter}</td>
+                    <td>${student}</td>
+                    <td>${time_in}</td>
+                    <td>${status}</td>
+                  </tr>`;
 
-                  const time_in = `${formattedTime}`;
-                  const status = attendanceData.status;
-                  console.log(stud_name, time_in, status);
+              // Push a promise for each row to the attendancePromises array
+              rows.push(row);
 
-                  const row = `<tr>
-              <td>${counter}</td>
-              <td>${stud_name}</td>
-              <td>${time_in}</td>
-              <td>${status}</td>
-            </tr>`;
-
-                  // Push a promise for each row to the attendancePromises array
-                  attendancePromises.push(Promise.resolve(row));
-
-                  // Increment the counter for the next iteration
-                  counter++;
-                } else {
-                  const time_in = "";
-                  const status = "";
-                  const row = `<tr>
-              <td>${counter}</td>
-              <td>${stud_name}</td>
-              <td>${time_in}</td>
-              <td>${status}</td>
-            </tr>`;
-                  attendancePromises.push(Promise.resolve(row));
-                  counter++;
-                }
-              });
-
-              // Wait for all attendancePromises to resolve before updating the table
-              console.log(Promise.all(attendancePromises));
-              return Promise.all(attendancePromises);
+              // Increment the counter for the next iteration
+              counter++;
+            } else {
+              const time_in = "";
+              const status = "";
+              const row = `<tr>
+                    <td>${counter}</td>
+                    <td>${student}</td>
+                    <td>${time_in}</td>
+                    <td>${status}</td>
+                  </tr>`;
+              rows.push(row);
+              counter++;
             }
+          }
+          return rows;
         })
         .then((rows) => {
           // Update the table with the resolved rows
@@ -435,9 +451,10 @@
         .catch((error) => {
           console.error('Error getting documents: ', error);
         });
+      })
     }
 
-    
+
     // Function to increment the date
     window.incrementDate = function () {
       currentDate.setDate(currentDate.getDate() + 1);
@@ -454,6 +471,14 @@
       tableBody.innerHTML = '';
       retrieveAndDisplayData(selectedClass);
     }
+
+    $(document).ready(function () {
+      $('#myTable').DataTable({
+        "aLengthMenu": [[3, 5, 10, 25, -1], [3, 5, 10, 25, "All"]],
+        "iDisplayLength": 3
+      });
+
+    });
 
 
   });
@@ -473,14 +498,4 @@
     });
   });
   //----- End
-</script>
-
-<script>
-  $(document).ready(function () {
-    $('#myTable').DataTable({
-      "aLengthMenu": [[3, 5, 10, 25, -1], [3, 5, 10, 25, "All"]],
-      "iDisplayLength": 3
-    });
-
-  });
 </script>
