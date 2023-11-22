@@ -41,7 +41,37 @@
     }
   </script>
 
+  <style>
+    .dataTables_info {
+      color: #fff !important;
+    }
 
+    .dataTables_wrapper .dataTables_filter label {
+      color: #fff !important;
+    }
+
+    /* Change the font color of the "Show" entries dropdown */
+    .dataTables_wrapper .dataTables_length label {
+      color: #ffff !important;
+    }
+
+    /* Change the font color of pagination buttons */
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+      color: #fff !important;
+    }
+
+    /* Change the font color of the current page number */
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+      color: #fff !important;
+    }
+
+    /* Change the font color of the page number box */
+    .dataTables_wrapper .dataTables_paginate .ellipsis,
+    .dataTables_wrapper .dataTables_paginate .paginate_button,
+    .dataTables_wrapper .dataTables_paginate .paginate_input {
+      color: #fff !important;
+    }
+  </style>
 
 </head>
 
@@ -161,7 +191,7 @@
           </div>
         </div>
         <div class="table-responsive" style="background-color: transparent; backdrop-filter: blur(20px); padding:20px;">
-          <table id="myTable" class="">
+          <table id="myTable" class="" style="width: 100% !important">
             <thead>
               <tr>
                 <td>No. </td>
@@ -308,6 +338,20 @@
     }
     // Initialize a flag to check if DataTable is already initialized
     let isDataTableInitialized = false;
+    let myTable;
+
+    function sortByStudentName(a, b) {
+      const nameA = a.student.toUpperCase(); // Convert names to uppercase for case-insensitive sorting
+      const nameB = b.student.toUpperCase();
+
+      if (nameA < nameB) {
+        return -1;
+      }
+      if (nameA > nameB) {
+        return 1;
+      }
+      return 0;
+    }
 
     // Function to retrieve and display data based on the selected class
     function retrieveAndDisplayData(selectedClass) {
@@ -370,29 +414,57 @@
               const status = attendanceData.status;
               const date_time = attendanceData.date_time;
               console.log("Attendance Data:", att_stud_class, status, date_time);
+              let studentAdded, existingIndex;
 
+              
 
               for (const filteredPromise of filteredPromises) {
                 const studRefer = filteredPromise.studRef;
                 const student = filteredPromise.stud_name;
+                const nonstat = "";
+                const nondate = "";
+
+                const existingIndex = filteredAttendance.findIndex(item => item.student === student);
 
                 if (att_stud_class === studRefer) {
-                  console.log("Attendance Doc:", attendanceDoc);
-                  // Add the attendance data to the filteredAttendance array
-                  filteredAttendance.push({
-                    student: student,
-                    att_stud_class: att_stud_class,
-                    status: status,
-                    date_time: date_time
-                  });
+                  // If att_stud_class === studRefer, update the array
+                  if (existingIndex !== -1) {
+                    filteredAttendance[existingIndex].att_stud_class = att_stud_class;
+                    filteredAttendance[existingIndex].status = status;
+                    filteredAttendance[existingIndex].date_time = date_time;
+                  } else {
+                    // If the student is not in the array, add a new entry with the provided values
+                    filteredAttendance.push({
+                      student: student,
+                      att_stud_class: att_stud_class,
+                      status: status,
+                      date_time: date_time
+                    });
+                  }
+                } else {
+                  // If att_stud_class !== studRefer and the student is not in the array, add a new entry with default values
+                  if (existingIndex === -1) {
+                    filteredAttendance.push({
+                      student: student,
+                      att_stud_class: att_stud_class,
+                      status: nonstat,
+                      date_time: nondate
+                    });
+                  }
+                  // If att_stud_class !== studRefer and the student is already in the array, do nothing
                 }
 
+                console.log("existingIndex:", existingIndex);
+                console.log("filteredAttendance:", filteredAttendance);
               }
+
             });
             const filteredAttendanceData = filteredAttendance;
             return filteredAttendanceData;
           }).then((filteredAttendanceData) => {
 
+            // Sort the filteredAttendanceData array by student name
+            filteredAttendanceData.sort(sortByStudentName);
             const rows = [];
             for (const attendance of filteredAttendanceData) {
               // Now, process attendanceRef documents for the selected date
@@ -403,8 +475,14 @@
 
               const student = attendance.student;
               const student_class = attendance.att_stud_class;
-              const date_time = attendance.date_time.toDate();
               const status = attendance.status;
+              let date_time;
+
+              if (!attendance.date_time) {
+                date_time = 0;
+              } else {
+                date_time = attendance.date_time.toDate();
+              }
 
               if (studRefs.includes(student_class) &&
                 date_time >= selectedDateStart &&
@@ -447,19 +525,22 @@
             return rows;
           })
             .then((rows) => {
-              tableBody.innerHTML = rows.join('');
-              if (!isDataTableInitialized){
-                $(document).ready(function () {
-                $('#myTable').DataTable({
-                  "aLengthMenu": [[3, 5, 10, 25, -1], [3, 5, 10, 25, "All"]],
-                  "iDisplayLength": 3
-                });
 
-              });
+
+              // Clear existing DataTable instance and destroy it before initializing a new one
+              if (myTable) {
+                myTable.clear().destroy();
               }
+              tableBody.innerHTML = rows.join('');
 
-              isDataTableInitialized = true;
-              
+
+              $(document).ready(function () {
+                myTable = $('#myTable').DataTable({
+                  "aLengthMenu": [[10, 25, -1], [10, 25, "All"]],
+                  "iDisplayLength": 10
+                });
+                isDataTableInitialized = true;
+              });
             })
             .catch((error) => {
               console.error('Error getting documents: ', error);
