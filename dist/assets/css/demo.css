@@ -49,22 +49,35 @@
 	margin-bottom: 20px;
 }
 
-.action-buttons {
-	margin-bottom: 100px;
-}
-
 #addModal {
 	display: none;
 	position: fixed;
 	z-index: 1;
 	left: 50%;
-	top: 55%;
+	top: 50%;
 	transform: translate(-50%, -50%);
 	width: 50%;
 	max-width: 400px;
 	padding: 20px;
 	border-radius: 15px;
 	background: transparent;
+	border: 1.5px solid rgba(248, 174, 0, 0.2);
+	backdrop-filter: blur(90px);
+	transition: all 0.5s;
+}
+
+#removeModal {
+	display: none;
+	position: fixed;
+	z-index: 1;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	width: 50%;
+	max-width: 400px;
+	padding: 20px;
+	border-radius: 15px;
+	background: #f2f2f2 !important;
 	border: 1.5px solid rgba(248, 174, 0, 0.2);
 	backdrop-filter: blur(90px);
 	transition: all 0.5s;
@@ -99,8 +112,8 @@ label{
 }
 
 
-input{
-	border-radius: 6px;
+input, select{
+	padding:5px;
 	width:54%;
 }
 

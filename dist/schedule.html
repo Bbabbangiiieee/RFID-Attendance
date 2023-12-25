@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Responsive Admin &amp; Dashboard Template based on Bootstrap 5">
+    <meta name="author" content="AdminKit">
+    <meta name="keywords"
+        content="adminkit, bootstrap, bootstrap 5, admin, dashboard, template, responsive, css, sass, html, theme, front-end, ui kit, web">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="shortcut icon" href="../images/ustp_favicon.jpg" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.0/css/jquery.dataTables.min.css" />
+
+    <link rel="canonical" href="https://demo-basic.adminkit.io/pages-blank.html" />
+
+    <title>USTP | Class Schedule</title>
+
+    <link href="./assets/css/app.css" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <!--Scripts-->
+    <script src="./assets/js/app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js/dist/Chart.min.js"></script>
+    <script>document.getElementsByTagName("html")[0].className += " js";</script>
+
+</head>
+
+
+<body>
+    <div class="wrapper">
+        <nav id="sidebar" class="sidebar js-sidebar">
+            <div class="sidebar-content js-simplebar">
+                <a class="sidebar-brand" href="dashboard.html">
+                    <span class="align-middle">
+                        <img class="avatar img-fluid rounded me-1" style="margin-right: 10px !important;"
+                            src="../images/ustp_favicon.jpg"></img>USTP</span>
+                </a>
+
+                <ul class="sidebar-nav">
+                    <li class="sidebar-header">
+                    </li>
+
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="dashboard.html">
+                            <i class="align-middle" data-feather="activity"></i> <span
+                                class="align-middle">Dashboard</span>
+                        </a>
+                    </li>
+
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="attendance.html">
+                            <i class="align-middle" data-feather="check-square"></i> <span
+                                class="align-middle">Attendance</span>
+                        </a>
+                    </li>
+
+                    <li class="sidebar-item active">
+                        <a class="sidebar-link" href="schedule.html">
+                            <i class="align-middle" data-feather="clock"></i> <span class="align-middle">Class
+                                Schedule</span>
+                        </a>
+                    </li>
+
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="calendar.html">
+                            <i class="align-middle" data-feather="calendar"></i> <span
+                                class="align-middle">Calendar</span>
+                        </a>
+                    </li>
+
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="help.html">
+                            <i class="align-middle" data-feather="help-circle"></i> <span
+                                class="align-middle">Help</span>
+                        </a>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="main">
+            <nav class="navbar navbar-expand navbar-light navbar-bg">
+                <a class="sidebar-toggle js-sidebar-toggle">
+                    <i class="hamburger align-self-center"></i>
+                </a>
+                <h3 style="font-weight: bold; margin: auto;">UNIVERSITY OF SCIENCE AND TECHNOLOGY OF SOUTHERN
+                    PHILIPPINES</h3 style="font-weight: bold; margin: auto;">
+
+
+                <div class="navbar-collapse collapse">
+                    <ul class="navbar-nav navbar-align">
+
+                        <li class="nav-item dropdown">
+
+                            <a class="nav-link dropdown-toggle d-none d-sm-inline-block" href="#"
+                                data-bs-toggle="dropdown">
+
+                                <i class="avatar img-fluid rounded me-1" data-feather="user"></i><span class="text-dark"
+                                    id="user"></span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end">
+                                <a class="dropdown-item" href="profile.html"><i class="align-middle me-1"
+                                        data-feather="user"></i> Profile</a>
+                                <a class="dropdown-item" href="schedule.html"><i class="align-middle me-1"
+                                        data-feather="clock"></i>
+                                    Schedule</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#" id="logout">Log out</a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <main class="content">
+                <div class="container-fluid p-0">
+
+                    <h1 class="h3 mb-3">Class Schedule</h1>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body" style="height: 100% !important;">
+                                    <div class="cd-schedule cd-schedule--loading margin-top-lg margin-bottom-lg js-cd-schedule"
+                                        style="padding-top: 0% !important; margin-top: 0% !important;">
+                                        <div class="cd-schedule__timeline" style="height: 1000px !important;">
+                                            <ul>
+                                                <li><span>07:30 AM</span></li>
+                                                <li><span>08:00 AM</span></li>
+                                                <li><span>08:30 AM</span></li>
+                                                <li><span>09:00 AM</span></li>
+                                                <li><span>09:30 AM</span></li>
+                                                <li><span>10:00 AM</span></li>
+                                                <li><span>10:30 AM</span></li>
+                                                <li><span>11:00 AM</span></li>
+                                                <li><span>11:30 AM</span></li>
+                                                <li><span>12:00 PM</span></li>
+                                                <li><span>12:30 PM</span></li>
+                                                <li><span>1:00 PM</span></li>
+                                                <li><span>1:30 PM</span></li>
+                                                <li><span>2:00 PM</span></li>
+                                                <li><span>2:30 PM</span></li>
+                                                <li><span>3:00 PM</span></li>
+                                                <li><span>3:30 PM</span></li>
+                                                <li><span>4:00 PM</span></li>
+                                                <li><span>4:30 PM</span></li>
+                                                <li><span>5:00 PM</span></li>
+                                                <li><span>5:30 PM</span></li>
+                                                <li><span>6:00 PM</span></li>
+                                                <li><span>6:30 PM</span></li>
+                                                <li><span>7:00 PM</span></li>
+                                                <li><span>7:30 PM</span></li>
+                                                <li><span>8:00 PM</span></li>
+                                                <li><span>8:30 PM</span></li>
+                                                <li><span>9:00 PM</span></li>
+                                            </ul>
+                                        </div> <!-- .cd-schedule__timeline -->
+
+                                        <div class="cd-schedule__events">
+                                            <ul style="height: 840px !important;">
+                                                <li class="cd-schedule__group">
+                                                    <div class="cd-schedule__top-info"><span>Monday</span></div>
+
+                                                    <ul class="monday">
+
+                                                    </ul>
+                                                </li>
+
+                                                <li class="cd-schedule__group">
+                                                    <div class="cd-schedule__top-info"><span>Tuesday</span></div>
+                                                    <ul class="tuesday">
+
+                                                    </ul>
+                                                </li>
+
+                                                <li class="cd-schedule__group">
+                                                    <div class="cd-schedule__top-info"><span>Wednesday</span></div>
+
+                                                    <ul class="wednesday">
+
+                                                    </ul>
+                                                </li>
+
+                                                <li class="cd-schedule__group">
+                                                    <div class="cd-schedule__top-info"><span>Thursday</span></div>
+
+                                                    <ul class="thursday">
+
+                                                    </ul>
+                                                </li>
+
+                                                <li class="cd-schedule__group">
+                                                    <div class="cd-schedule__top-info"><span>Friday</span></div>
+
+                                                    <ul class="friday">
+
+                                                    </ul>
+                                                </li>
+
+                                                <li class="cd-schedule__group">
+                                                    <div class="cd-schedule__top-info"><span>Saturday</span></div>
+
+                                                    <ul class="saturday">
+
+                                                    </ul>
+                                                </li>
+
+                                            </ul>
+                                        </div>
+
+                                        <div class="cd-schedule-modal"
+                                            style="width: 50px !important; height: 50px !important;">
+                                            <header class="cd-schedule-modal__header" style="width: 50px !important;">
+                                                <div class="cd-schedule-modal__content">
+                                                    <span class="cd-schedule-modal__date"></span>
+                                                    <h3 class="cd-schedule-modal__name"></h3>
+                                                </div>
+
+                                                <div class="cd-schedule-modal__header-bg"
+                                                    style="height: 50px !important; width:50px !important"></div>
+                                            </header>
+
+                                            <div class="cd-schedule-modal__body">
+                                                <div class="cd-schedule-modal__event-info"></div>
+                                                <div class="cd-schedule-modal__body-bg"></div>
+                                            </div>
+
+                                            <a href="#0" class="cd-schedule-modal__close text-replace">Close</a>
+                                        </div>
+
+                                        <div class="cd-schedule__cover-layer"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+
+    <!-- jQuery -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>
+    <script src="./assets/js/util.js"></script>
+    <script src="./assets/js/main.js"></script>
+
+
+    <script type="module">
+
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-analytics.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, connectFirestoreEmulator, query, getDocs, getDoc, updateDoc, setDoc, doc, onSnapshot, deleteDoc, orderBy } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js';
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+            apiKey: "AIzaSyAlorTSQlN1-GfABuQgbUGQi5Fd3tg9T3E",
+            authDomain: "test-de11b.firebaseapp.com",
+            projectId: "test-de11b",
+            storageBucket: "test-de11b.appspot.com",
+            messagingSenderId: "731834875968",
+            appId: "1:731834875968:web:939410069881f707c31fa5",
+            measurementId: "G-6EDC6FST60"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const analytics = getAnalytics(app);
+        const auth = getAuth();
+        console.log(app);
+        let userId, userRef, classListRef, profileRef;
+
+        document.addEventListener("DOMContentLoaded", function () {
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    // User is signed in.
+                    const userUid = user.uid;
+                    console.log('User UID:', userUid);
+
+                    // Now you can use the userUid in your queries
+                    userId = userUid; // Use this userId in your collections
+                    userRef = collection(db, "Attendance_Monitoring");
+                    classListRef = collection(userRef, userId, "class_list");
+                    profileRef = collection(db, "Attendance_Monitoring", userId, 'profile');
+                    var counter = 0;
+
+                    getDocs(profileRef).then((userRefSnapshot) => {
+
+                        userRefSnapshot.forEach((userListDoc) => {
+                            const userInfo = userListDoc.data();
+                            const fname = userInfo.fname;
+                            const lname = userInfo.lname;
+                            const mname = userInfo.mname;
+
+                            document.getElementById("user").innerText = `${fname} ${lname}`;
+
+                        });
+
+
+
+                    }).catch((error) => {
+                        console.error("Error getting document:", error);
+                    });
+
+
+                    // Fetch student data
+                    getDocs(classListRef).then((classListRefSnapshot) => {
+
+                        classListRefSnapshot.forEach((classListDoc) => {
+                            // Increment the counter
+                            counter++;
+
+                            // Reset the counter if it reaches four
+                            if (counter > 4) {
+                                counter = 1;
+                            }
+                            const classListData = classListDoc.data()
+                            const startTimeInt = classListData.class_start;
+                            const endTimeInt = classListData.class_end;
+                            const day = classListData.day;
+
+                            const startTime = convertIntToTime(startTimeInt);
+                            const endTime = convertIntToTime(endTimeInt);
+
+
+                            // Calculate the position of the event based on start and end times
+                            const startHour = Math.floor(startTimeInt / 100);
+                            const startMinute = startTimeInt % 100;
+                            const endHour = Math.floor(endTimeInt / 100);
+                            const endMinute = endTimeInt % 100;
+
+                            const startPosition = ((startHour - 8) * 60 + startMinute) + 30; // Adjust for starting at 7:30 AM
+                            const eventDuration = (endHour - startHour) * 60 + endMinute - startMinute;
+
+                            // Create a new list item element
+                            const listItem = document.createElement('li');
+                            listItem.className = 'cd-schedule__event';
+
+                            // Set style attributes based on calculated position and duration
+                            listItem.style.top = `${startPosition}px`;
+                            listItem.style.height = `${eventDuration}px`;
+
+                            // Set data attributes based on classListData
+                            listItem.innerHTML = `
+                                                                <a data-start="${startTime}" data-end="${endTime}"
+                        data-content="event-${classListData.class_name_sec}" data-event="event-${counter}"
+                        href="#0">
+                        <em class="cd-schedule__name">${classListData.class_name_sec}</em>
+                    </a>
+                    
+                `;
+
+                            if (day === "Monday") {
+                                const ulEvents = document.querySelector('.cd-schedule__events .monday');
+                                ulEvents.appendChild(listItem);
+                            } else if (day === "Tuesday") {
+                                const ulEvents = document.querySelector('.cd-schedule__events .tuesday');
+                                ulEvents.appendChild(listItem);
+                            } else if (day === "Wednesday") {
+                                const ulEvents = document.querySelector('.cd-schedule__events .wednesday');
+                                ulEvents.appendChild(listItem);
+                            } else if (day === "Thursday") {
+                                const ulEvents = document.querySelector('.cd-schedule__events .thursday');
+                                ulEvents.appendChild(listItem);
+                            } else if (day === "Friday") {
+                                const ulEvents = document.querySelector('.cd-schedule__events .friday');
+                                ulEvents.appendChild(listItem);
+                            } else if (day === "Saturday") {
+                                const ulEvents = document.querySelector('.cd-schedule__events .saturday');
+                                ulEvents.appendChild(listItem);
+                            }
+
+
+                        });
+                    });
+                }
+            })
+
+            function convertIntToTime(intTime) {
+                // Check if intTime is a valid number
+                if (typeof intTime !== 'number' || isNaN(intTime)) {
+                    console.error('Invalid intTime:', intTime);
+                    return null; // Or handle the error in your application
+                }
+
+                // Convert integer to string and pad with leading zeros if needed
+                const timeString = intTime.toString().padStart(4, '0');
+
+                // Extract hours and minutes
+                const hours = timeString.substring(0, 2);
+                const minutes = timeString.substring(2);
+
+                // Format the time
+                const formattedTime = `${hours}:${minutes}`;
+
+                return formattedTime;
+            }
+        });
+
+        document.getElementById("logout").addEventListener("click", function () {
+		signOut(auth).then(() => {
+			// Sign-out successful.
+			console.log('Sign-out successful.');
+			alert('Sign-out successful.');
+			window.location.href = "index.html";
+		}).catch((error) => {
+			// An error happened.
+			console.log('An error happened.');
+		});
+	});
+
+    </script>
+</body>
+
+</html>

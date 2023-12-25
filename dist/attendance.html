@@ -2,211 +2,188 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <title>Attendance</title>
-  <script defer src="./bundle.js"></script>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="Responsive Admin &amp; Dashboard Template based on Bootstrap 5">
+	<meta name="author" content="AdminKit">
+	<meta name="keywords"
+		content="adminkit, bootstrap, bootstrap 5, admin, dashboard, template, responsive, css, sass, html, theme, front-end, ui kit, web">
 
-  <!--Links-->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-  <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.0/css/jquery.dataTables.min.css" />
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link rel="shortcut icon" href="../images/ustp_favicon.jpg" />
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.0/css/jquery.dataTables.min.css" />
+
+	<link rel="canonical" href="https://demo-basic.adminkit.io/pages-blank.html" />
+
+	<title>USTP | Attendance List</title>
+
+	<link href="./assets/css/app.css" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+	<!--Scripts-->
+	
+	<script src="./assets/js/app.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js/dist/Chart.min.js"></script>
+	<script>
+		// Initialize the current date
+		const currentDate = new Date();
+
+		// Function to display the current date in "dd/mm/yyyy" format with short month name
+		function displayCurrentDate() {
+			const container = document.getElementById("date-container");
+			const day = currentDate.getDate();
+			const month = currentDate.toLocaleString('default', { month: 'short' });
+			const year = currentDate.getFullYear();
 
 
-  <!--CSS-->
-  <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
-  <link href="../assets/css/headers.css" rel="stylesheet">
-  <link href="../assets/css/sidebars.css" rel="stylesheet">
-  <link href="../assets/css/attendance.css" rel="stylesheet">
-  <link rel="icon" type="image/x-icon" href="../images/ustp_favicon.jpg">
-
-  <!--Scripts-->
-  <script src="../assets/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js/dist/Chart.min.js"></script>
-  <script>
-    // Initialize the current date
-    const currentDate = new Date();
-
-    // Function to display the current date in "dd/mm/yyyy" format with short month name
-    function displayCurrentDate() {
-      const container = document.getElementById("date-container");
-      const day = currentDate.getDate();
-      const month = currentDate.toLocaleString('default', { month: 'short' });
-      const year = currentDate.getFullYear();
-
-
-      container.textContent = `Date: ${day} ${month} ${year}`;
-    }
-  </script>
-
-  <style>
-    .dataTables_info {
-      color: #fff !important;
-    }
-
-    .dataTables_wrapper .dataTables_filter label {
-      color: #fff !important;
-    }
-
-    /* Change the font color of the "Show" entries dropdown */
-    .dataTables_wrapper .dataTables_length label {
-      color: #ffff !important;
-    }
-
-    /* Change the font color of pagination buttons */
-    .dataTables_wrapper .dataTables_paginate .paginate_button {
-      color: #fff !important;
-    }
-
-    /* Change the font color of the current page number */
-    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
-      color: #fff !important;
-    }
-
-    /* Change the font color of the page number box */
-    .dataTables_wrapper .dataTables_paginate .ellipsis,
-    .dataTables_wrapper .dataTables_paginate .paginate_button,
-    .dataTables_wrapper .dataTables_paginate .paginate_input {
-      color: #fff !important;
-    }
-  </style>
-
+			container.textContent = `Date: ${day} ${month} ${year}`;
+		}
+	</script>
 </head>
 
 <body>
-  <header class="p-3 mb-3 border-bottom header">
-    <div class="container-fluid d-grid gap-3 d-flex flex-wrap align-items-center justify-content-center"
-      style="grid-template-columns: 1fr 2fr;">
+	<div class="wrapper">
+		<nav id="sidebar" class="sidebar js-sidebar">
+			<div class="sidebar-content js-simplebar">
+				<a class="sidebar-brand" href="dashboard.html">
+					<span class="align-middle">
+						<img class="avatar img-fluid rounded me-1" style="margin-right: 10px !important;"
+							src="../images/ustp_favicon.jpg"></img>USTP</span>
+				</a>
 
-      <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 link-body-emphasis text-decoration-none">
-        <img class="logo" src="../images/ustp_favicon.jpg">
-      </a>
-      <p class="nav col-12 col-lg-auto me-lg-auto mb-2 mb-lg-0 justify-content-center mb-md-0 nav-link px-2 link-body-emphasis centeredp"
-        style="color: #0B0B45 !important;">
-        UNIVERSITY OF SCIENCE AND TECHNOLOGY OF SOUTHERN PHILIPPINES
-      </p>
+				<ul class="sidebar-nav">
+					<li class="sidebar-header">
+					</li>
 
-      <div class="dropdown text-end">
-        <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown"
-          aria-expanded="false" style="color: #0B0B45 !important;">
-          <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle">
-          Teacher's Name
-        </a>
-        <ul class="dropdown-menu text-small">
-          <li><a class="dropdown-item" href="schedule.html">Class Schedule</a></li>
-          <li><a class="dropdown-item" href="profile.html">Profile</a></li>
-          <li>
-            <hr class="dropdown-divider">
-          </li>
-          <li><a class="dropdown-item" href="#" id="logout">Sign out</a></li>
-        </ul>
-      </div>
+					<li class="sidebar-item">
+						<a class="sidebar-link" href="dashboard.html">
+							<i class="align-middle" data-feather="activity"></i> <span
+								class="align-middle">Dashboard</span>
+						</a>
+					</li>
 
-    </div>
-    </div>
-  </header>
+					<li class="sidebar-item active">
+						<a class="sidebar-link" href="attendance.html">
+							<i class="align-middle" data-feather="check-square"></i> <span
+								class="align-middle">Attendance</span>
+						</a>
+					</li>
 
-  <nav class="col-3">
-    <button class="btn btn-toggle" type="button" aria-expanded="false">
-      <span class="material-symbols-outlined">menu</span>
-    </button>
+					<li class="sidebar-item">
+						<a class="sidebar-link" href="schedule.html">
+							<i class="align-middle" data-feather="clock"></i> <span class="align-middle">Class
+								Schedule</span>
+						</a>
+					</li>
 
-    <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark sidebar" style="width: 280px;">
+					<li class="sidebar-item">
+						<a class="sidebar-link" href="calendar.html">
+							<i class="align-middle" data-feather="calendar"></i> <span
+								class="align-middle">Calendar</span>
+						</a>
+					</li>
 
-      <hr>
-      <ul class="nav nav-pills flex-column mb-auto list">
-        <li class="nav-item">
-          <a href="dashboard.html" class="nav-link" aria-current="page">
-            <span class="material-symbols-outlined icon">
-              speed
-            </span>
-            Dashboard
-          </a>
-        </li>
-        <li>
-          <a href="attendance.html" class="nav-link text-white">
-            <span class="material-symbols-outlined icon">
-              assignment_turned_in</span>
-            Attendance
-          </a>
-        </li>
-        <li>
-          <a href="schedule.html" class="nav-link text-white">
-            <span class="material-symbols-outlined icon">
-              calendar_today
-            </span>
-            Class Schedule
-          </a>
-        </li>
-        <li>
-          <a href="calendar.html" class="nav-link text-white">
-            <span class="material-symbols-outlined icon">
-              calendar_month
-            </span>
-            Calendar
-          </a>
-        </li>
-        <li>
-          <a href="help.html" class="nav-link text-white">
-            <span class="material-symbols-outlined icon">
-              help
-            </span>
-            Help
-          </a>
-        </li>
-      </ul>
+					<li class="sidebar-item">
+						<a class="sidebar-link" href="help.html">
+							<i class="align-middle" data-feather="help-circle"></i> <span
+								class="align-middle">Help</span>
+						</a>
+				</ul>
+			</div>
+		</nav>
 
-    </div>
-  </nav>
+		<div class="main">
+			<nav class="navbar navbar-expand navbar-light navbar-bg">
+				<a class="sidebar-toggle js-sidebar-toggle">
+					<i class="hamburger align-self-center"></i>
+				</a>
+				<h3 style="font-weight: bold; margin: auto;">UNIVERSITY OF SCIENCE AND TECHNOLOGY OF SOUTHERN
+					PHILIPPINES</h3 style="font-weight: bold; margin: auto;">
 
-  <main>
 
-    <div class="d-flex bd-highlight main-dashboard" aria-expanded="false">
-      <div class="p-2 flex-grow-1 bd-highlight ">
-        <h2 class="dashboard">Attendance</h2>
-        <div class="main-container att-container">
-          <div class="d-flex mb-3">
-            <div class="dropdown d-flex justify-content-right">
-              <select class="btn btn-secondary class" id="myDropdown">
-                <option value="" disabled selected>Select Class</option>
-              </select>
-            </div>
+				<div class="navbar-collapse collapse">
+					<ul class="navbar-nav navbar-align">
 
-            <button class="btn btn-secondary class" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <center>Take Attendance</center>
-            </button>
-          </div>
+						<li class="nav-item dropdown">
 
-          <div class="ms-auto p-2">
-            <span onclick="decrementDate()" class="material-symbols-outlined chevron">
-              chevron_left
-            </span>
-            <div id="date-container"></div>
-            <script>displayCurrentDate();</script>
-            <span onclick="incrementDate()" class="material-symbols-outlined chevron">
-              chevron_right
-            </span>
-          </div>
-        </div>
-        <div class="table-responsive" style="background-color: transparent; backdrop-filter: blur(20px); padding:20px;">
-          <table id="myTable" class="" style="width: 100% !important">
-            <thead>
-              <tr>
-                <td>No. </td>
-                <td>Name</td>
-                <td>Time In</td>
-                <td>Status</td>
-              </tr>
-            </thead>
-            <tbody id="tableBody">
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </main>
+							<a class="nav-link dropdown-toggle d-none d-sm-inline-block" href="#"
+								data-bs-toggle="dropdown">
+
+								<i class="avatar img-fluid rounded me-1" data-feather="user"></i><span
+									class="text-dark" id="user"></span>
+							</a>
+							<div class="dropdown-menu dropdown-menu-end">
+								<a class="dropdown-item" href="profile.html"><i class="align-middle me-1"
+										data-feather="user"></i> Profile</a>
+								<a class="dropdown-item" href="schedule.html"><i class="align-middle me-1"
+										data-feather="clock"></i>
+									Schedule</a>
+								<div class="dropdown-divider"></div>
+								<a class="dropdown-item" href="#" id="logout">Log out</a>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</nav>
+
+			<main class="content">
+				<div class="container-fluid p-0">
+
+					<h1 class="h3 mb-3">Attendance</h1>
+
+					<div class="row">
+						<div class="col-12">
+							<div class="card">
+								<div class="card-header">
+
+									<div class="nav-link d-none d-sm-inline-block">
+										<select class="btn btn-warning text-dark" style="padding: 6px !important;"
+											id="myDropdown">
+											<option value="" disabled selected>Select Class</option>
+										</select>
+									</div>
+									<div class="nav-link  d-none d-sm-inline-block"><button type="button"
+											class="btn btn-warning"><a href="add.html"
+												style="text-decoration:none !important;"><span class="text-dark">Take
+													Attendance
+												</span></a></button>
+									</div>
+
+									<div class="d-sm-inline-block" style="float:right !important;">
+										<i class="align-middle me-1" data-feather="chevron-left"
+											onclick="decrementDate()"></i></a>
+										<div id="date-container" class="d-sm-inline-block"></div>
+										<script>displayCurrentDate();</script>
+										<i class="align-middle me-1" data-feather="chevron-right"
+											onclick="incrementDate()"></i>
+									</div>
+								</div>
+								<div class="card-body">
+									<table id="myTable" class="" style="width: 100% !important">
+										<thead>
+											<tr>
+												<td>No. </td>
+												<td>Name</td>
+												<td>Time In</td>
+												<td>Status</td>
+											</tr>
+										</thead>
+										<tbody id="tableBody">
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+
+
+					</div>
+				</div>
+			</main>
+
+		</div>
+	</div>
+
 
 
 </body>
@@ -214,395 +191,403 @@
 </html>
 <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript" charset="utf8"
-  src="https://cdn.datatables.net/1.12.0/js/jquery.dataTables.min.js"></script>
-
-<script>
-  const toggleButton = document.querySelector('.btn-toggle');
-  const sidebar = document.querySelector('.sidebar'); // Assuming your sidebar has an ID of "sidebar"
-  const main = document.querySelector(".main-dashboard");
-
-  toggleButton.addEventListener('click', () => {
-    const isExpanded = toggleButton.getAttribute('aria-expanded') === 'true';
-
-    if (isExpanded) {
-      toggleButton.setAttribute('aria-expanded', 'false');
-      main.setAttribute('aria-expanded', 'false');
-    } else {
-      toggleButton.setAttribute('aria-expanded', 'true');
-      main.setAttribute('aria-expanded', 'true');
-    }
-
-    sidebar.classList.toggle('collapsed');
-
-
-
-  });
-</script>
+	src="https://cdn.datatables.net/1.12.0/js/jquery.dataTables.min.js"></script>
 
 <script type="module">
 
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-analytics.js";
-  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js";
-  import { getFirestore, collection, addDoc, connectFirestoreEmulator, query, getDocs, getDoc, updateDoc, setDoc, doc, onSnapshot, deleteDoc, orderBy } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js';
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+	// Import the functions you need from the SDKs you need
+	import { initializeApp } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js";
+	import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-analytics.js";
+	import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js";
+	import { getFirestore, collection, addDoc, connectFirestoreEmulator, query, getDocs, getDoc, updateDoc, setDoc, doc, onSnapshot, deleteDoc, orderBy } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js';
+	// TODO: Add SDKs for Firebase products that you want to use
+	// https://firebase.google.com/docs/web/setup#available-libraries
 
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyAlorTSQlN1-GfABuQgbUGQi5Fd3tg9T3E",
-    authDomain: "test-de11b.firebaseapp.com",
-    projectId: "test-de11b",
-    storageBucket: "test-de11b.appspot.com",
-    messagingSenderId: "731834875968",
-    appId: "1:731834875968:web:939410069881f707c31fa5",
-    measurementId: "G-6EDC6FST60"
-  };
+	// Your web app's Firebase configuration
+	// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+	const firebaseConfig = {
+		apiKey: "AIzaSyAlorTSQlN1-GfABuQgbUGQi5Fd3tg9T3E",
+		authDomain: "test-de11b.firebaseapp.com",
+		projectId: "test-de11b",
+		storageBucket: "test-de11b.appspot.com",
+		messagingSenderId: "731834875968",
+		appId: "1:731834875968:web:939410069881f707c31fa5",
+		measurementId: "G-6EDC6FST60"
+	};
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const analytics = getAnalytics(app);
-  const auth = getAuth();
-  console.log(app);
+	// Initialize Firebase
+	const app = initializeApp(firebaseConfig);
+	const db = getFirestore(app);
+	const analytics = getAnalytics(app);
+	const auth = getAuth();
+	console.log(app);
 
-  document.addEventListener('DOMContentLoaded', function () {
-    // Assuming your dropdown has the ID "myDropdown"
-    const dropdown = document.getElementById("myDropdown");
-    const tableBody = document.getElementById('tableBody');
-    let counter = 1;
-    let i = 0;
-    let selectedClass, studRefs = [], matchingStudIndex; // Variable to store the selected class
-    let userId, userRef, stud_classRef, attendanceRef, classListRef;
-
-
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        // User is signed in.
-        const userUid = user.uid;
-        console.log('User UID:', userUid);
-
-        // Now you can use the userUid in your queries
-        userId = userUid; // Use this userId in your collections
-        userRef = collection(db, "Attendance_Monitoring");
-        stud_classRef = collection(userRef, userId, "stud_class");
-        attendanceRef = collection(userRef, userId, "attendance");
-        classListRef = collection(userRef, userId, "class_list");
-
-        // Continue with the rest of your code...
+	document.addEventListener('DOMContentLoaded', function () {
+		// Assuming your dropdown has the ID "myDropdown"
+		const dropdown = document.getElementById("myDropdown");
+		const tableBody = document.getElementById('tableBody');
+		let counter = 1;
+		let i = 0;
+		let selectedClass, studRefs = [], matchingStudIndex; // Variable to store the selected class
+		let userId, userRef, stud_classRef, attendanceRef, classListRef, profileRef;
 
 
+		auth.onAuthStateChanged((user) => {
+			if (user) {
+				// User is signed in.
+				const userUid = user.uid;
+				console.log('User UID:', userUid);
 
-        // Fetch data and populate options
-        getDocs(classListRef).then((classListRefSnapshot) => {
-          // Log the fetched data to the console for debugging
-          console.log("Fetched data:", classListRefSnapshot);
+				// Now you can use the userUid in your queries
+				userId = userUid; // Use this userId in your collections
+				userRef = collection(db, "Attendance_Monitoring");
+				stud_classRef = collection(userRef, userId, "stud_class");
+				attendanceRef = collection(userRef, userId, "attendance");
+				classListRef = collection(userRef, userId, "class_list");
+				profileRef = collection(db, "Attendance_Monitoring", userId, 'profile');
 
-          // Array to store the options
-          let optionsArray = [];
+				getDocs(profileRef).then((userRefSnapshot) => {
+                        
+                        userRefSnapshot.forEach((userListDoc) => {
+                            const userInfo = userListDoc.data();
+                            const fname = userInfo.fname;
+                            const lname = userInfo.lname;
+                            const mname = userInfo.mname;
 
-          classListRefSnapshot.forEach((classListDoc) => {
-            const classListData = classListDoc.data().class_name_sec;
+                            document.getElementById("user").innerText = `${fname} ${lname}`;
 
-            // Add each option to the array
-            optionsArray.push(classListData);
-          });
-
-          // Populate dropdown with options
-          populateDropdown(optionsArray);
-        });
-
-        // Function to populate the dropdown with options
-        function populateDropdown(options) {
-          // Clear existing options
-          dropdown.innerHTML = "";
-
-          // Add new options
-          options.forEach((option) => {
-            const optionElement = document.createElement("option");
-            optionElement.text = option;
-            optionElement.value = option; // Set the value attribute
-            dropdown.appendChild(optionElement);
-          });
-
-          // Print the value of the default option
-          selectedClass = dropdown.value;
-
-          // Add event listener to the dropdown
-          dropdown.addEventListener("change", function () {
-            selectedClass = this.value;
-            handleValueChanged(selectedClass);
-          });
-
-          // Call the function to retrieve and display data based on the default selected class
-          retrieveAndDisplayData(selectedClass);
-        }
-
-        // Function to handle the changed value
-        function handleValueChanged(updatedValue) {
-          selectedClass = updatedValue;
-          tableBody.innerHTML = '';
-
-          // Call the function to retrieve and display data based on the selected class
-          retrieveAndDisplayData(selectedClass);
-        }
-        // Initialize a flag to check if DataTable is already initialized
-        let isDataTableInitialized = false;
-        let myTable;
-
-        function sortByStudentName(a, b) {
-          const nameA = a.student.toUpperCase(); // Convert names to uppercase for case-insensitive sorting
-          const nameB = b.student.toUpperCase();
-
-          if (nameA < nameB) {
-            return -1;
-          }
-          if (nameA > nameB) {
-            return 1;
-          }
-          return 0;
-        }
-
-        // Function to retrieve and display data based on the selected class
-        function retrieveAndDisplayData(selectedClass) {
-          // Reset studRefs and counter for each call
-          let studRefs = [];
-          let counter = 1;
-          let stud_names = []; // Declare an array to store stud_names and studRefs
-          let stud_name; // Declare stud_name outside the loop
-          let class_name_sec;
-          const filteredPromises = [];
-          const filteredAttendance = [];
-
-          // Retrieve data from the stud_class collection based on the selectedClass
-          getDocs(stud_classRef)
-            .then((studClassSnapshot) => {
-              const promises = [];
-
-              studClassSnapshot.forEach((studClassDoc) => {
-                const studClassData = studClassDoc.data();
-                const studentRef = studClassData.student;
-                const classRef = studClassData.class;
-
-                // Use a closure to capture the value of stud_name and studRef for each iteration
-                let studRef;
-
-                const promise = Promise.all([getDoc(studentRef), getDoc(classRef)]).then(
-                  ([studentDoc, classDoc]) => {
-                    if (
-                      studentDoc.exists &&
-                      classDoc.exists &&
-                      classDoc.data().class_name_sec === selectedClass
-                    ) {
-                      stud_name = studentDoc.data().stud_name;
-                      const class_name_sec = classDoc.data().class_name_sec;
-                      studRef = studClassDoc.ref.path;
-                      studRefs.push(studRef);
-                      stud_names.push({ stud_name, studRef });
-                      console.log(stud_name, class_name_sec);
-
-                      // Add the promise to the filteredPromises array
-                      filteredPromises.push({ stud_name, class_name_sec, studRef });
-                    }
-                  }
-                );
-
-                promises.push(promise);
-              });
-
-              // Wait for all promises to resolve before moving to the next step
-              return Promise.all(promises).then(() => filteredPromises);
-            })
-            .then((filteredPromises) => {
-              // Now, process attendanceRef documents
-              console.log("filtered:", filteredPromises);
-
-              getDocs(attendanceRef).then((attendanceSnapshot) => {
-                attendanceSnapshot.forEach((attendanceDoc) => {
-                  const attendanceData = attendanceDoc.data();
-                  const att_stud_class = attendanceData.student_class.path;
-                  const status = attendanceData.status;
-                  const date_time = attendanceData.date_time;
-                  console.log("Attendance Data:", att_stud_class, status, date_time);
-                  let studentAdded, existingIndex;
-
-
-
-                  for (const filteredPromise of filteredPromises) {
-                    const studRefer = filteredPromise.studRef;
-                    const student = filteredPromise.stud_name;
-                    const nonstat = "";
-                    const nondate = "";
-
-                    const existingIndex = filteredAttendance.findIndex(item => item.student === student);
-
-                    if (att_stud_class === studRefer) {
-                      // If att_stud_class === studRefer, update the array
-                      if (existingIndex !== -1) {
-                        filteredAttendance[existingIndex].att_stud_class = att_stud_class;
-                        filteredAttendance[existingIndex].status = status;
-                        filteredAttendance[existingIndex].date_time = date_time;
-                      } else {
-                        // If the student is not in the array, add a new entry with the provided values
-                        filteredAttendance.push({
-                          student: student,
-                          att_stud_class: att_stud_class,
-                          status: status,
-                          date_time: date_time
                         });
-                      }
-                    } else {
-                      // If att_stud_class !== studRefer and the student is not in the array, add a new entry with default values
-                      if (existingIndex === -1) {
-                        filteredAttendance.push({
-                          student: student,
-                          att_stud_class: att_stud_class,
-                          status: nonstat,
-                          date_time: nondate
-                        });
-                      }
-                      // If att_stud_class !== studRefer and the student is already in the array, do nothing
-                    }
-
-                    console.log("existingIndex:", existingIndex);
-                    console.log("filteredAttendance:", filteredAttendance);
-                  }
-
-                });
-                const filteredAttendanceData = filteredAttendance;
-                return filteredAttendanceData;
-              }).then((filteredAttendanceData) => {
-
-                // Sort the filteredAttendanceData array by student name
-                filteredAttendanceData.sort(sortByStudentName);
-                const rows = [];
-                for (const attendance of filteredAttendanceData) {
-                  // Now, process attendanceRef documents for the selected date
-                  const selectedDateStart = new Date(currentDate);
-                  selectedDateStart.setHours(0, 0, 0, 0);
-                  const selectedDateEnd = new Date(currentDate);
-                  selectedDateEnd.setHours(23, 59, 59, 999);
-
-                  const student = attendance.student;
-                  const student_class = attendance.att_stud_class;
-                  const status = attendance.status;
-                  let date_time;
-
-                  if (!attendance.date_time) {
-                    date_time = 0;
-                  } else {
-                    date_time = attendance.date_time.toDate();
-                  }
-
-                  if (studRefs.includes(student_class) &&
-                    date_time >= selectedDateStart &&
-                    date_time <= selectedDateEnd) {
-                    const date = new Date(attendance.date_time.toDate());
-
-
-                    // Format the date and time
-                    const formattedDate = date.toLocaleDateString(); // Adjust the format based on your preference
-                    const formattedTime = date.toLocaleTimeString(); // Adjust the format based on your preference
-
-                    const time_in = `${formattedTime}`;
-                    console.log(stud_name, time_in, status);
-
-                    const row = `<tr>
-                    <td>${counter}</td>
-                    <td>${student}</td>
-                    <td>${time_in}</td>
-                    <td>${status}</td>
-                  </tr>`;
-
-                    // Push a promise for each row to the attendancePromises array
-                    rows.push(row);
-
-                    // Increment the counter for the next iteration
-                    counter++;
-                  } else {
-                    const time_in = "";
-                    const status = "";
-                    const row = `<tr>
-                    <td>${counter}</td>
-                    <td>${student}</td>
-                    <td>${time_in}</td>
-                    <td>${status}</td>
-                  </tr>`;
-                    rows.push(row);
-                    counter++;
-                  }
-                }
-                return rows;
-              })
-                .then((rows) => {
-
-
-                  // Clear existing DataTable instance and destroy it before initializing a new one
-                  if (myTable) {
-                    myTable.clear().destroy();
-                  }
-                  tableBody.innerHTML = rows.join('');
-
-
-                  $(document).ready(function () {
-                    myTable = $('#myTable').DataTable({
-                      "aLengthMenu": [[10, 25, -1], [10, 25, "All"]],
-                      "iDisplayLength": 10
+                       
+                            
+                        
+                    }).catch((error) => {
+                        console.error("Error getting document:", error);
                     });
-                    isDataTableInitialized = true;
-                  });
-                })
-                .catch((error) => {
-                  console.error('Error getting documents: ', error);
-                });
-            })
-
-        }
-
-        // Function to increment the date
-        window.incrementDate = function () {
-          currentDate.setDate(currentDate.getDate() + 1);
-          displayCurrentDate();
-          tableBody.innerHTML = '';
-          retrieveAndDisplayData(selectedClass);
-        }
-
-
-        // Function to decrement the date
-        window.decrementDate = function () {
-          currentDate.setDate(currentDate.getDate() - 1);
-          displayCurrentDate();
-          tableBody.innerHTML = '';
-          retrieveAndDisplayData(selectedClass);
-        }
-
-      } else {
-        // User is signed out.
-        console.log('User is signed out.');
-        // You might want to redirect the user to the login page or show a login form.
-      }
-    });
 
 
 
 
-  });
+
+				// Fetch data and populate options
+				getDocs(classListRef).then((classListRefSnapshot) => {
+					// Log the fetched data to the console for debugging
+					console.log("Fetched data:", classListRefSnapshot);
+
+					// Array to store the options
+					let optionsArray = [];
+
+					classListRefSnapshot.forEach((classListDoc) => {
+						const classListData = classListDoc.data().class_name_sec;
+
+						// Add each option to the array
+						optionsArray.push(classListData);
+					});
+
+					// Populate dropdown with options
+					populateDropdown(optionsArray);
+				});
+
+				// Function to populate the dropdown with options
+				function populateDropdown(options) {
+					// Clear existing options
+					dropdown.innerHTML = "";
+
+					// Add new options
+					options.forEach((option) => {
+						const optionElement = document.createElement("option");
+						optionElement.text = option;
+						optionElement.value = option; // Set the value attribute
+						dropdown.appendChild(optionElement);
+					});
+
+					// Print the value of the default option
+					selectedClass = dropdown.value;
+
+					// Add event listener to the dropdown
+					dropdown.addEventListener("change", function () {
+						selectedClass = this.value;
+						handleValueChanged(selectedClass);
+					});
+
+					// Call the function to retrieve and display data based on the default selected class
+					retrieveAndDisplayData(selectedClass);
+				}
+
+				// Function to handle the changed value
+				function handleValueChanged(updatedValue) {
+					selectedClass = updatedValue;
+					tableBody.innerHTML = '';
+
+					// Call the function to retrieve and display data based on the selected class
+					retrieveAndDisplayData(selectedClass);
+				}
+				// Initialize a flag to check if DataTable is already initialized
+				let isDataTableInitialized = false;
+				let myTable;
+
+				function sortByStudentName(a, b) {
+					const nameA = a.student.toUpperCase(); // Convert names to uppercase for case-insensitive sorting
+					const nameB = b.student.toUpperCase();
+
+					if (nameA < nameB) {
+						return -1;
+					}
+					if (nameA > nameB) {
+						return 1;
+					}
+					return 0;
+				}
+
+				// Function to retrieve and display data based on the selected class
+				function retrieveAndDisplayData(selectedClass) {
+					// Reset studRefs and counter for each call
+					let studRefs = [];
+					let counter = 1;
+					let stud_names = []; // Declare an array to store stud_names and studRefs
+					let stud_name; // Declare stud_name outside the loop
+					let class_name_sec;
+					const filteredPromises = [];
+					const filteredAttendance = [];
+
+					// Retrieve data from the stud_class collection based on the selectedClass
+					getDocs(stud_classRef)
+						.then((studClassSnapshot) => {
+							const promises = [];
+
+							studClassSnapshot.forEach((studClassDoc) => {
+								const studClassData = studClassDoc.data();
+								const studentRef = studClassData.student;
+								const classRef = studClassData.class;
+
+								// Use a closure to capture the value of stud_name and studRef for each iteration
+								let studRef;
+
+								const promise = Promise.all([getDoc(studentRef), getDoc(classRef)]).then(
+									([studentDoc, classDoc]) => {
+										if (
+											studentDoc.exists &&
+											classDoc.exists &&
+											classDoc.data().class_name_sec === selectedClass
+										) {
+											stud_name = studentDoc.data().stud_name;
+											const class_name_sec = classDoc.data().class_name_sec;
+											studRef = studClassDoc.ref.path;
+											studRefs.push(studRef);
+											stud_names.push({ stud_name, studRef });
+											console.log(stud_name, class_name_sec);
+
+											// Add the promise to the filteredPromises array
+											filteredPromises.push({ stud_name, class_name_sec, studRef });
+										}
+									}
+								);
+
+								promises.push(promise);
+							});
+
+							// Wait for all promises to resolve before moving to the next step
+							return Promise.all(promises).then(() => filteredPromises);
+						})
+						.then((filteredPromises) => {
+							// Now, process attendanceRef documents
+							console.log("filtered:", filteredPromises);
+
+							getDocs(attendanceRef).then((attendanceSnapshot) => {
+								attendanceSnapshot.forEach((attendanceDoc) => {
+									const attendanceData = attendanceDoc.data();
+									const att_stud_class = attendanceData.student_class.path;
+									const status = attendanceData.status;
+									const date_time = attendanceData.date_time;
+									console.log("Attendance Data:", att_stud_class, status, date_time);
+									let studentAdded, existingIndex;
 
 
-  document.getElementById('logout').style.display = 'block';
-  //----- Logout code start	  
-  document.getElementById("logout").addEventListener("click", function () {
-    signOut(auth).then(() => {
-      // Sign-out successful.
-      console.log('Sign-out successful.');
-      alert('Sign-out successful.');
-      window.location.href = "index.html";
-    }).catch((error) => {
-      // An error happened.
-      console.log('An error happened.');
-    });
-  });
-  //----- End
+
+									for (const filteredPromise of filteredPromises) {
+										const studRefer = filteredPromise.studRef;
+										const student = filteredPromise.stud_name;
+										const nonstat = "";
+										const nondate = "";
+
+										const selectedDateStart = new Date(currentDate);
+										selectedDateStart.setHours(0, 0, 0, 0);
+										const selectedDateEnd = new Date(currentDate);
+										selectedDateEnd.setHours(23, 59, 59, 999);
+
+										let date_time;
+
+										if (!attendanceData.date_time) {
+											date_time = 0;
+										} else {
+											date_time = attendanceData.date_time.toDate();
+										}
+
+										console.log("start:" + selectedDateStart + "\nend:" + selectedDateEnd + "\ndate_time:" + date_time);
+
+										const existingIndex = filteredAttendance.findIndex(item => item.student === student);
+
+										if (att_stud_class === studRefer &&
+											date_time >= selectedDateStart &&
+											date_time <= selectedDateEnd) {
+											// If att_stud_class === studRefer, update the array
+											if (existingIndex !== -1) {
+												filteredAttendance[existingIndex].att_stud_class = att_stud_class;
+												filteredAttendance[existingIndex].status = status;
+												filteredAttendance[existingIndex].date_time = date_time;
+											} else {
+												// If the student is not in the array, add a new entry with the provided values
+												filteredAttendance.push({
+													student: student,
+													att_stud_class: att_stud_class,
+													status: status,
+													date_time: date_time
+												});
+											}
+										} else {
+											// If att_stud_class !== studRefer and the student is not in the array, add a new entry with default values
+											if (existingIndex === -1) {
+												filteredAttendance.push({
+													student: student,
+													att_stud_class: att_stud_class,
+													status: nonstat,
+													date_time: nondate
+												});
+											}
+											// If att_stud_class !== studRefer and the student is already in the array, do nothing
+										}
+
+										console.log("existingIndex:", existingIndex);
+										console.log("filteredAttendance:", filteredAttendance);
+									}
+
+								});
+								const filteredAttendanceData = filteredAttendance;
+								return filteredAttendanceData;
+							}).then((filteredAttendanceData) => {
+
+								// Sort the filteredAttendanceData array by student name
+								filteredAttendanceData.sort(sortByStudentName);
+								const rows = [];
+								for (const attendance of filteredAttendanceData) {
+
+									console.log("attendance:" + attendance);
+									const student = attendance.student;
+									const student_class = attendance.att_stud_class;
+									const status = attendance.status;
+									const date = attendance.date_time;
+
+									const selectedDateStart = new Date(currentDate);
+									selectedDateStart.setHours(0, 0, 0, 0);
+									const selectedDateEnd = new Date(currentDate);
+									selectedDateEnd.setHours(23, 59, 59, 999);
+
+
+									if (studRefs.includes(student_class) &&
+										date >= selectedDateStart &&
+										date <= selectedDateEnd) {
+										// Format the date and time
+										const formattedDate = date.toLocaleDateString(); // Adjust the format based on your preference
+										const formattedTime = date.toLocaleTimeString(); // Adjust the format based on your preference
+
+										const time_in = `${formattedTime}`;
+										console.log(stud_name, time_in, status);
+										const statusStyle = status === 'Absent' ? 'color: red;' : status === 'Present' ? 'color: green;' : status === 'Late' ? 'color: orange;' : status === 'Present' ? 'color: gray;' : '';
+
+
+										const row = `<tr>
+					  <td>${counter}</td>
+					  <td>${student}</td>
+					  <td>${time_in}</td>
+					  <td style="${statusStyle}">${status}</td>
+					</tr>`;
+
+										// Push a promise for each row to the attendancePromises array
+										rows.push(row);
+
+										// Increment the counter for the next iteration
+										counter++;
+									} else {
+										const time_in = "";
+										const status = "";
+										const row = `<tr>
+					  <td>${counter}</td>
+					  <td>${student}</td>
+					  <td>${time_in}</td>
+					  <td>${status}</td>
+					</tr>`;
+										rows.push(row);
+										counter++;
+									}
+								}
+								return rows;
+							})
+								.then((rows) => {
+
+
+									// Clear existing DataTable instance and destroy it before initializing a new one
+									if (myTable) {
+										myTable.clear().destroy();
+									}
+									tableBody.innerHTML = rows.join('');
+
+
+									$(document).ready(function () {
+										myTable = $('#myTable').DataTable({
+											"aLengthMenu": [[10, 25, -1], [10, 25, "All"]],
+											"iDisplayLength": 10
+										});
+										isDataTableInitialized = true;
+									});
+								})
+								.catch((error) => {
+									console.error('Error getting documents: ', error);
+								});
+						})
+
+				}
+
+				// Function to increment the date
+				window.incrementDate = function () {
+					currentDate.setDate(currentDate.getDate() + 1);
+					displayCurrentDate();
+					tableBody.innerHTML = '';
+					retrieveAndDisplayData(selectedClass);
+				}
+
+
+				// Function to decrement the date
+				window.decrementDate = function () {
+					currentDate.setDate(currentDate.getDate() - 1);
+					displayCurrentDate();
+					tableBody.innerHTML = '';
+					retrieveAndDisplayData(selectedClass);
+				}
+
+			} else {
+				// User is signed out.
+				console.log('User is signed out.');
+				// You might want to redirect the user to the login page or show a login form.
+			}
+		});
+
+
+
+
+	});
+
+
+	document.getElementById('logout').style.display = 'block';
+	//----- Logout code start	  
+	document.getElementById("logout").addEventListener("click", function () {
+		signOut(auth).then(() => {
+			// Sign-out successful.
+			console.log('Sign-out successful.');
+			alert('Sign-out successful.');
+			window.location.href = "index.html";
+		}).catch((error) => {
+			// An error happened.
+			console.log('An error happened.');
+		});
+	});
+	//----- End
 </script>

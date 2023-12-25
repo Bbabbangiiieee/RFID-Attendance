@@ -2,214 +2,445 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>Calendar</title>
-    <script defer src="./bundle.js"></script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Responsive Admin &amp; Dashboard Template based on Bootstrap 5">
+    <meta name="author" content="AdminKit">
+    <meta name="keywords"
+        content="adminkit, bootstrap, bootstrap 5, admin, dashboard, template, responsive, css, sass, html, theme, front-end, ui kit, web">
 
-    <!-- Links -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Mono&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="shortcut icon" href="../images/ustp_favicon.jpg" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.0/css/jquery.dataTables.min.css" />
 
+    <link rel="canonical" href="https://demo-basic.adminkit.io/pages-blank.html" />
 
-    <!-- CSS -->
-    <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
-    <link href="../assets/css/headers.css" rel="stylesheet">
-    <link href="../assets/css/sidebars.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="../assets/css/evo-calendar.css">
-    <link rel="stylesheet" type="text/css" href="../assets/css/demo.css">
-    <link rel="icon" type="image/x-icon" href="../images/ustp_favicon.jpg">
+    <title>USTP | Calendar</title>
 
+    <link href="./assets/css/app.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="./assets/css/evo-calendar.css">
+    <link rel="stylesheet" type="text/css" href="./assets/css/demo.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <!--Scripts-->
-    <script src="../assets/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js/dist/Chart.min.js"></script>
 
+    <script src="./assets/js/app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js/dist/Chart.min.js"></script>
 
 </head>
 
+
 <body>
-    <header class="p-3 mb-3 border-bottom header">
-        <div class="container-fluid d-grid gap-3 d-flex flex-wrap align-items-center justify-content-center"
-            style="grid-template-columns: 1fr 2fr;">
-
-            <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 link-body-emphasis text-decoration-none">
-                <img class="logo" src="../images/ustp_favicon.jpg">
-            </a>
-            <p class="nav col-12 col-lg-auto me-lg-auto mb-2 mb-lg-0 justify-content-center mb-md-0 nav-link px-2 link-body-emphasis centeredp"
-                style="color: #0B0B45 !important;">
-                UNIVERSITY OF SCIENCE AND TECHNOLOGY OF SOUTHERN PHILIPPINES
-            </p>
-
-            <div class="dropdown text-end">
-                <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle"
-                    data-bs-toggle="dropdown" aria-expanded="false" style="color: #0B0B45 !important;">
-                    <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle">
-                    Teacher's Name
+    <div class="wrapper">
+        <nav id="sidebar" class="sidebar js-sidebar">
+            <div class="sidebar-content js-simplebar">
+                <a class="sidebar-brand" href="dashboard.html">
+                    <span class="align-middle">
+                        <img class="avatar img-fluid rounded me-1" style="margin-right: 10px !important;"
+                            src="../images/ustp_favicon.jpg"></img>USTP</span>
                 </a>
-                <ul class="dropdown-menu text-small">
-                    <li><a class="dropdown-item" href="schedule.html">Class Schedule</a></li>
-                    <li><a class="dropdown-item" href="profile.html">Profile</a></li>
-                    <li>
-                        <hr class="dropdown-divider">
+
+                <ul class="sidebar-nav">
+                    <li class="sidebar-header">
                     </li>
-                    <li><a class="dropdown-item" href="#">Sign out</a></li>
+
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="dashboard.html">
+                            <i class="align-middle" data-feather="activity"></i> <span
+                                class="align-middle">Dashboard</span>
+                        </a>
+                    </li>
+
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="attendance.html">
+                            <i class="align-middle" data-feather="check-square"></i> <span
+                                class="align-middle">Attendance</span>
+                        </a>
+                    </li>
+
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="schedule.html">
+                            <i class="align-middle" data-feather="clock"></i> <span class="align-middle">Class
+                                Schedule</span>
+                        </a>
+                    </li>
+
+                    <li class="sidebar-item active">
+                        <a class="sidebar-link" href="calendar.html">
+                            <i class="align-middle" data-feather="calendar"></i> <span
+                                class="align-middle">Calendar</span>
+                        </a>
+                    </li>
+
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="help.html">
+                            <i class="align-middle" data-feather="help-circle"></i> <span
+                                class="align-middle">Help</span>
+                        </a>
                 </ul>
             </div>
+        </nav>
 
-        </div>
-        </div>
-    </header>
+        <div class="main">
+            <nav class="navbar navbar-expand navbar-light navbar-bg">
+                <a class="sidebar-toggle js-sidebar-toggle">
+                    <i class="hamburger align-self-center"></i>
+                </a>
+                <h3 style="font-weight: bold; margin: auto;">UNIVERSITY OF SCIENCE AND TECHNOLOGY OF SOUTHERN
+                    PHILIPPINES</h3 style="font-weight: bold; margin: auto;">
 
-    <nav class="col-3">
-        <button class="btn btn-toggle" type="button" aria-expanded="false">
-            <span class="material-symbols-outlined">menu</span>
-        </button>
 
-        <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark sidebar" style="width: 280px;">
+                <div class="navbar-collapse collapse">
+                    <ul class="navbar-nav navbar-align">
 
-            <hr>
-            <ul class="nav nav-pills flex-column mb-auto list">
-                <li class="nav-item">
-                    <a href="dashboard.html" class="nav-link" aria-current="page">
-                        <span class="material-symbols-outlined icon">
-                            speed
-                        </span>
-                        Dashboard
-                    </a>
-                </li>
-                <li>
-                    <a href="attendance.html" class="nav-link text-white">
-                        <span class="material-symbols-outlined icon">
-                            assignment_turned_in</span>
-                        Attendance
-                    </a>
-                </li>
-                <li>
-                    <a href="schedule.html" class="nav-link text-white">
-                        <span class="material-symbols-outlined icon">
-                            calendar_today
-                        </span>
-                        Class Schedule
-                    </a>
-                </li>
-                <li>
-                    <a href="calendar.html" class="nav-link text-white">
-                        <span class="material-symbols-outlined icon">
-                            calendar_month
-                        </span>
-                        Calendar
-                    </a>
-                </li>
-                <li>
-                    <a href="help.html" class="nav-link text-white">
-                        <span class="material-symbols-outlined icon">
-                            help
-                        </span>
-                        Help
-                    </a>
-                </li>
-            </ul>
+                        <li class="nav-item dropdown">
 
-        </div>
-    </nav>
-    <main>
-        <div class="d-flex bd-highlight main-dashboard" aria-expanded="false">
-            <div class="p-2 flex-grow-1 bd-highlight ">
-                <h2 class="dashboard">Calendar</h2>
-                <div class="main-container ">
-                    <div class="console-log">
-                        <div class="log-content">
-                            <div class="--noshadow" id="demoEvoCalendar"></div>
-                        </div>
-                    </div>
-                    <center>
-                        <div class="action-buttons">
-                            <button class="btn-action btn-add" id="addBtn">ADD EVENT</button>
-                            <button class="btn-remove" id="removeBtn">REMOVE EVENT</button>
-                        </div>
-                    </center>
+                            <a class="nav-link dropdown-toggle d-none d-sm-inline-block" href="#"
+                                data-bs-toggle="dropdown">
 
+                                <i class="avatar img-fluid rounded me-1" data-feather="user"></i><span class="text-dark"
+                                    id="user"></span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end">
+                                <a class="dropdown-item" href="profile.html"><i class="align-middle me-1"
+                                        data-feather="user"></i> Profile</a>
+                                <a class="dropdown-item" href="schedule.html"><i class="align-middle me-1"
+                                        data-feather="clock"></i>
+                                    Schedule</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#" id="logout">Log out</a>
+                            </div>
+                        </li>
+                    </ul>
                 </div>
-            </div>
+            </nav>
+
+            <main class="content">
+                <div class="container-fluid p-0">
+
+                    <h1 class="h3 mb-3">Calendar</h1>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="main-container ">
+                                        <div class="console-log">
+                                            <div class="log-content">
+                                                <div class="--noshadow" id="demoEvoCalendar"></div>
+                                            </div>
+                                        </div>
+                                        <center>
+                                            <div class="action-buttons">
+                                                <button class="btn-action btn-add">ADD EVENT</button>
+                                                <button class="btn-remove btn-removeModal">REMOVE EVENT</button>
+                                            </div>
+                                        </center>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+                <div id="addModal">
+                    <h3>Add Event</h3>
+                    <form id="editForm" action="calendar.html" method="POST">
+                        <label for="date">Date:</label>
+                        <input type="date" id="date" name="date"><br>
+                        <label for="event">Event:</label>
+                        <input type="text" id="event" placeholder="" name="event"><br>
+                        <label for="desc">Description:</label>
+                        <textarea id="desc" placeholder="" name="desc"></textarea><br>
+                        <label for="year">Yearly?</label>
+                        <select id="year" placeholder="" name="year" style="width: 100% !;">
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
+
+                    </form>
+
+                    <div class="btn">
+                        <input type="button" id="cancelAdd" class="btn-remove" value="Cancel">
+                        <input type="button" id="save" class="btn-action" value="Save">
+                    </div>
+                </div>
+
+                <div id="removeModal">
+                    <h3>Remove Event</h3>
+                    <ul id="eventsListContainer"></ul>
+
+                    <div class="btn">
+                        <input type="button" id="cancelRemove" class="btn-remove" style="width: 100% !important;" value="Cancel">
+                    </div>
+                </div>
+
+
         </div>
+        </main>
 
-        <div id="addModal">
-            <h3>Add Event</h3>
-            <form id="editForm">
-                <label for="date">Date:</label>
-                <input type="date" id="date" name="date"><br>
-                <label for="event">Event:</label>
-                <input type="text" id="event" placeholder="" name="event"><br>
-                <label for="desc">Description:</label>
-                <textarea id="desc" placeholder="" name="desc"></textarea>
+    </div>
+    </div>
 
-            </form>
-            
-            <div class="btn">
-                <input type="button" id="cancelAdd" class="btn-remove" value="Cancel">
-                <input type="button" id="save" class="btn-action" value="Save">
-            </div>
-        </div>
-
-
-        </div>
-    </main>
 
     <!-- jQuery -->
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>
-    <script src="../assets/js/evo-calendar.min.js"></script>
-    <script src="../assets/js/demo.js"></script>
+    <script src="./assets/js/evo-calendar.min.js"></script>
+    <script src="./assets/js/demo.js"></script>
+
 </body>
 
 </html>
 
-<script>
-    const toggleButton = document.querySelector('.btn-toggle');
-    const sidebar = document.querySelector('.sidebar'); // Assuming your sidebar has an ID of "sidebar"
-    const main = document.querySelector(".main-dashboard");
+<script type="module">
 
-    toggleButton.addEventListener('click', () => {
-        const isExpanded = toggleButton.getAttribute('aria-expanded') === 'true';
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-analytics.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, connectFirestoreEmulator, query, getDocs, getDoc, updateDoc, setDoc, doc, onSnapshot, deleteDoc, orderBy } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js';
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
 
-        if (isExpanded) {
-            toggleButton.setAttribute('aria-expanded', 'false');
-            main.setAttribute('aria-expanded', 'false');
-        } else {
-            toggleButton.setAttribute('aria-expanded', 'true');
-            main.setAttribute('aria-expanded', 'true');
-        }
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+        apiKey: "AIzaSyAlorTSQlN1-GfABuQgbUGQi5Fd3tg9T3E",
+        authDomain: "test-de11b.firebaseapp.com",
+        projectId: "test-de11b",
+        storageBucket: "test-de11b.appspot.com",
+        messagingSenderId: "731834875968",
+        appId: "1:731834875968:web:939410069881f707c31fa5",
+        measurementId: "G-6EDC6FST60"
+    };
 
-        sidebar.classList.toggle('collapsed');
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const analytics = getAnalytics(app);
+    const auth = getAuth();
+    console.log(app);
+    let userId, userRef, classListRef, profileRef, eventsRef, calendarEvents = [];
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const $demoEvoCalendar = $("#demoEvoCalendar");
+
+        $demoEvoCalendar.evoCalendar({
+            format: "MM dd, yyyy",
+            titleFormat: "MM",
+            calendarEvents: []
+        });
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                // User is signed in.
+                const userUid = user.uid;
+                console.log('User UID:', userUid);
+
+                // Now you can use the userUid in your queries
+                userId = userUid; // Use this userId in your collections
+                userRef = collection(db, "Attendance_Monitoring");
+                classListRef = collection(userRef, userId, "class_list");
+                eventsRef = collection(userRef, userId, "events");
+                docRef = doc(db, 'Attendance Monitoring', userId);
+                var counter = 0;
+
+                getDocs(profileRef).then((userRefSnapshot) => {
+
+                    userRefSnapshot.forEach((userListDoc) => {
+                        const userInfo = userListDoc.data();
+                        const fname = userInfo.fname;
+                        const lname = userInfo.lname;
+                        const mname = userInfo.mname;
+
+                        document.getElementById("user").innerText = `${fname} ${lname}`;
+
+                    });
+
+                }).catch((error) => {
+                    console.error("Error getting document:", error);
+                });
+
+                getDocs(eventsRef).then((eventsRefSnapshot) => {
+
+                    eventsRefSnapshot.forEach((eventsListDoc) => {
+                        const eventsInfo = eventsListDoc.data();
+                        console.log("events:" + eventsInfo);
+
+                        const eventId = eventsListDoc.id;
+                        const event = eventsInfo.event;
+                        const desc = eventsInfo.desc;
+                        const date = eventsInfo.date;
+                        let yearly;
+
+                        if (eventsInfo.yearly === "yes") {
+                            yearly = true;
+                        } else {
+                            yearly = false;
+                        }
+
+                        // Add the event to the EvoCalendar
+                        $demoEvoCalendar.evoCalendar('addCalendarEvent', [{
+                            id: eventId, // Use a unique identifier for each event
+                            name: event,
+                            description: desc,
+                            date: date,
+                            type: 'event',
+                            everyYear: yearly
+                        }]);
+                    });
+
+                }).catch((error) => {
+                    console.error("Error getting document:", error);
+                });
+
+                $(document).ready(function () {
+                    // Add Data Modal Script
+                    $('.btn-add').on('click', function () {
+
+                        // Show the modal
+                        $('#addModal').show();
+                    });
 
 
+                    $('#save').on('click', function () {
+                        $('#addModal').hide();
+                    });
+                    $('#cancelAdd').on('click', function () {
+                        // Hide the modal
+                        $('#addModal').hide();
+                    });
+                });
 
+                $(document).ready(function () {
+                    // Remove Modal Script
+                    $('.btn-removeModal').on('click', function () {
+
+                        // Show the modal
+                        $('#removeModal').show();
+                        showEventsList();
+                    });
+
+
+                    $('#remove').on('click', function () {
+                        $('#removeModal').hide();
+                    });
+                    $('#cancelRemove').on('click', function () {
+                        // Hide the modal
+                        $('#removeModal').hide();
+                    });
+                });
+
+
+            }
+
+            function saveEventData() {
+                const date = $('#date').val();
+                const event = $('#event').val();
+                const desc = $('#desc').val();
+                const yearly = $('#year').val();
+
+                // Check if any field is empty
+                if (!date || !event || !desc || !yearly) {
+                    alert('Please fill out all fields');
+                    return;
+                }
+
+                // Save data to Firestore
+                const eventData = {
+                    date: date,
+                    event: event,
+                    desc: desc,
+                    yearly: yearly
+                };
+
+                const eventsRef = collection(db, 'Attendance_Monitoring', userId, 'events');
+
+                // Add a new document with a generated ID
+                addDoc(eventsRef, eventData)
+                    .then(() => {
+                        console.log('Event data successfully added to Firestore');
+                        // You can close the modal or perform any other actions after saving
+                        location.reload();
+                    })
+                    .catch((error) => {
+                        console.error('Error adding event data to Firestore: ', error);
+                    });
+            }
+
+            // Attach the saveEventData function to the click event of the "Save" button
+            $('#save').on('click', saveEventData);
+
+            function showEventsList() {
+                const eventsListContainer = $('#eventsListContainer');
+                eventsListContainer.empty();
+
+                // Fetch events from Firestore
+                getDocs(eventsRef)
+                    .then((eventsRefSnapshot) => {
+                        eventsRefSnapshot.forEach((eventsListDoc) => {
+                            const eventsInfo = eventsListDoc.data();
+                            const eventId = eventsListDoc.id;
+                            const event = eventsInfo.event;
+                            const date = eventsInfo.date;
+                            console.log("I got here");
+
+                            // Create a list item for each event with a data attribute to store the event ID
+                            const listItem = $('<li>')
+                                .text(`${event} on ${date}`)
+                                .data('eventId', eventId)
+                                .css({
+                                    'font-size': '20px',
+                                    'color': '#0B0B45',
+                                    'cursor': 'pointer',
+                                });
+
+                            // Add click event to the list item to handle event removal
+                            listItem.on('click', function () {
+                                // Get the event ID stored in the data attribute
+                                const selectedEventId = $(this).data('eventId');
+
+                                // Ask for confirmation before removing the event
+                                const confirmed = confirm(`Are you sure you want to remove the selected event?`);
+
+                                if (confirmed) {
+                                    deleteDoc(doc(eventsRef, eventId))
+                                        .then(() => {
+                                            console.log(`Event with ID ${eventId} removed successfully.`);
+
+                                            // Refresh the page after removal
+                                            location.reload();
+                                        })
+                                        .catch((error) => {
+                                            console.error("Error removing event:", error);
+                                        });
+                                }
+                            });
+
+                            // Append the list item to the container
+                            eventsListContainer.append(listItem);
+                        });
+                    })
+                    .catch((error) => {
+                        console.error("Error getting document:", error);
+                    });
+            }
+        });
     });
-</script>
 
-<script>
-    $(document).ready(function () {
-        // Add Data Modal Script
-        $('.btn-add').on('click', function () {
+    document.getElementById("logout").addEventListener("click", function () {
+		signOut(auth).then(() => {
+			// Sign-out successful.
+			console.log('Sign-out successful.');
+			alert('Sign-out successful.');
+			window.location.href = "index.html";
+		}).catch((error) => {
+			// An error happened.
+			console.log('An error happened.');
+		});
+	});
 
-            // Show the modal
-            $('#addModal').show();
-        });
-
-
-        $('#save').on('click', function () {
-
-            //Insert add code here
-
-            $('#addModal').hide();
-        });
-        $('#cancelAdd').on('click', function () {
-            // Hide the modal
-            $('#addModal').hide();
-        });
-    });
 </script>
