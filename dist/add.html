@@ -108,8 +108,8 @@
                             <a class="nav-link dropdown-toggle d-none d-sm-inline-block" href="#"
                                 data-bs-toggle="dropdown">
 
-                                <i class="avatar img-fluid rounded me-1" data-feather="user"></i><span
-                                    class="text-dark" id="user"></span>
+                                <i class="avatar img-fluid rounded me-1" data-feather="user"></i><span class="text-dark"
+                                    id="user"></span>
                             </a>
                             <div class="dropdown-menu dropdown-menu-end">
                                 <a class="dropdown-item" href="profile.html"><i class="align-middle me-1"
@@ -209,13 +209,13 @@
     // Your web app's Firebase configuration
     // For Firebase JS SDK v7.20.0 and later, measurementId is optional
     const firebaseConfig = {
-        apiKey: "AIzaSyAlorTSQlN1-GfABuQgbUGQi5Fd3tg9T3E",
-        authDomain: "test-de11b.firebaseapp.com",
-        projectId: "test-de11b",
-        storageBucket: "test-de11b.appspot.com",
-        messagingSenderId: "731834875968",
-        appId: "1:731834875968:web:939410069881f707c31fa5",
-        measurementId: "G-6EDC6FST60"
+        apiKey: "AIzaSyAvI3hLtCXY2wt2ub4-HSV6RuOsQLSxn24",
+        authDomain: "attendance-73f9c.firebaseapp.com",
+        projectId: "attendance-73f9c",
+        storageBucket: "attendance-73f9c.appspot.com",
+        messagingSenderId: "604516915514",
+        appId: "1:604516915514:web:3d45ba93f938d45e5ed803",
+        measurementId: "G-6J7XH07YNX"
     };
 
     // Initialize Firebase
@@ -234,6 +234,7 @@
         let selectedClass, studRefs = [], matchingStudIndex; // Variable to store the selected class
         let userId, userRef, stud_classRef, attendanceRef, classListRef, profileRef;
         let eventListenerAdded = false;
+        let eventListenerUpdated = false;
 
 
         auth.onAuthStateChanged((user) => {
@@ -251,22 +252,22 @@
                 profileRef = collection(db, "Attendance_Monitoring", userId, 'profile');
 
                 getDocs(profileRef).then((userRefSnapshot) => {
-                        
-                        userRefSnapshot.forEach((userListDoc) => {
-                            const userInfo = userListDoc.data();
-                            const fname = userInfo.fname;
-                            const lname = userInfo.lname;
-                            const mname = userInfo.mname;
 
-                            document.getElementById("user").innerText = `${fname} ${lname}`;
+                    userRefSnapshot.forEach((userListDoc) => {
+                        const userInfo = userListDoc.data();
+                        const fname = userInfo.fname;
+                        const lname = userInfo.lname;
+                        const mname = userInfo.mname;
 
-                        });
-                       
-                            
-                        
-                    }).catch((error) => {
-                        console.error("Error getting document:", error);
+                        document.getElementById("user").innerText = `${fname} ${lname}`;
+
                     });
+
+
+
+                }).catch((error) => {
+                    console.error("Error getting document:", error);
+                });
 
 
 
@@ -280,8 +281,11 @@
                     classListRefSnapshot.forEach((classListDoc) => {
                         const classListData = classListDoc.data().class_name_sec;
 
-                        // Add each option to the array
-                        optionsArray.push(classListData);
+                        // Check if the class is not already in the array before adding it
+                        if (!optionsArray.includes(classListData)) {
+                            // Add the class to the array
+                            optionsArray.push(classListData);
+                        }
                     });
 
                     // Populate dropdown with options
@@ -396,10 +400,11 @@
                             getDocs(attendanceRef).then((attendanceSnapshot) => {
                                 attendanceSnapshot.forEach((attendanceDoc) => {
                                     const attendanceData = attendanceDoc.data();
+                                    const att_Id = attendanceDoc.id;
                                     const att_stud_class = attendanceData.student_class.path;
                                     const status = attendanceData.status;
                                     const date_time = attendanceData.date_time;
-                                    console.log("Attendance Data:", att_stud_class, status, date_time);
+                                    console.log("Attendance Data:", att_stud_class, status, date_time, att_Id);
                                     let studentAdded, existingIndex;
 
 
@@ -411,17 +416,34 @@
                                         const nonstat = "";
                                         const nondate = "";
 
+                                        const selectedDateStart = new Date(currentDate);
+                                        selectedDateStart.setHours(0, 0, 0, 0);
+                                        const selectedDateEnd = new Date(currentDate);
+                                        selectedDateEnd.setHours(23, 59, 59, 999);
+
+                                        let date_time;
+
+                                        if (!attendanceData.date_time) {
+                                            date_time = 0;
+                                        } else {
+                                            date_time = attendanceData.date_time.toDate();
+                                        }
+
                                         const existingIndex = filteredAttendance.findIndex(item => item.student === student);
 
-                                        if (att_stud_class === studRefer) {
+                                        if (att_stud_class === studRefer &&
+                                            date_time >= selectedDateStart &&
+                                            date_time <= selectedDateEnd) {
                                             // If att_stud_class === studRefer, update the array
                                             if (existingIndex !== -1) {
                                                 filteredAttendance[existingIndex].att_stud_class = studRefer;
                                                 filteredAttendance[existingIndex].status = status;
                                                 filteredAttendance[existingIndex].date_time = date_time;
+                                                filteredAttendance[existingIndex].att_Id = att_Id;
                                             } else {
                                                 // If the student is not in the array, add a new entry with the provided values
                                                 filteredAttendance.push({
+                                                    att_Id: att_Id,
                                                     student: student,
                                                     att_stud_class: att_stud_class,
                                                     status: status,
@@ -432,6 +454,7 @@
                                             // If att_stud_class !== studRefer and the student is not in the array, add a new entry with default values
                                             if (existingIndex === -1) {
                                                 filteredAttendance.push({
+                                                    att_Id: att_Id,
                                                     student: student,
                                                     att_stud_class: studRefer,
                                                     status: nonstat,
@@ -454,44 +477,43 @@
                                 filteredAttendanceData.sort(sortByStudentName);
                                 const rows = [];
                                 for (const attendance of filteredAttendanceData) {
-                                    // Now, process attendanceRef documents for the selected date
+
+
+                                    const att_Id = attendance.att_Id;
+                                    const student = attendance.student;
+                                    const student_class = attendance.att_stud_class;
+                                    const status = attendance.status;
+                                    const date = attendance.date_time;
+
                                     const selectedDateStart = new Date(currentDate);
                                     selectedDateStart.setHours(0, 0, 0, 0);
                                     const selectedDateEnd = new Date(currentDate);
                                     selectedDateEnd.setHours(23, 59, 59, 999);
 
-
-                                    console.log("haha:" + attendance);
-                                    const student = attendance.student;
-                                    const student_class = attendance.att_stud_class;
-                                    const status = attendance.status;
-                                    let date_time;
-
-                                    if (!attendance.date_time) {
-                                        date_time = 0;
-                                    } else {
-                                        date_time = attendance.date_time.toDate();
-                                    }
-
                                     if (studRefs.includes(student_class) &&
-                                        date_time >= selectedDateStart &&
-                                        date_time <= selectedDateEnd) {
-                                        const date = new Date(attendance.date_time.toDate());
-
-
+                                        date >= selectedDateStart &&
+                                        date <= selectedDateEnd) {
                                         // Format the date and time
                                         const formattedDate = date.toLocaleDateString(); // Adjust the format based on your preference
                                         const formattedTime = date.toLocaleTimeString(); // Adjust the format based on your preference
 
                                         const time_in = `${formattedTime}`;
                                         console.log(stud_name, time_in, status);
-                                        const statusStyle = status === 'Absent' ? 'color: red;' : status === 'Present' ? 'color: green;' : status === 'Late' ? 'color: yellow;' : status === 'Present' ? 'color: gray;' : '';
+                                        const statusStyle = status === 'Absent' ? 'color: red;' : status === 'Present on time' ? 'color: green;' : status === 'Present but late' ? 'color: orange;' : status === 'Excuse' ? 'color: gray;' : '';
 
                                         const row = `<tr class="filled">
-                                        <td>${counter}</td>
+                                        <td><input type="hidden" id="studId" class="form-control" value="${att_Id}" readonly>${counter}</td>
                                         <td>${student}</td>
                                         <td><input type="text" class="form-control" value="${time_in ? time_in : ''}" placeholder="Enter time" readonly></td>
-                                        <td><input type="text" class="form-control" value="${status}" style="${statusStyle}" placeholder="Enter time" readonly></td>
+                                        <td>
+                                            <select id="statusInput" class="form-control" style="${statusStyle}">
+                                                <option value="${status}" selected>${status}</option>
+                                                <option value="Present on time" style="color: green;">Present on time</option>
+                                                <option value="Absent" style="color:red;">Absent</option>
+                                                <option value="Present but late" style="color: orange;">Present but late</option>
+                                                <option value="Excuse" style="color: gray;">Excuse</option>
+                                            </select>
+                                        </td>
                                         <td><input type="hidden" id="studInput" class="form-control" value="${student_class}" placeholder="Enter time" readonly>${selectedClass}</td>
                                         
                                         
@@ -502,6 +524,38 @@
 
                                         // Increment the counter for the next iteration
                                         counter++;
+
+                                        if (!eventListenerUpdated) {
+                                            document.querySelector('button[type="button"]').addEventListener('click', function () {
+                                                // Iterate through the rows in the table
+                                                document.querySelectorAll('#myTable tbody tr').forEach((row) => {
+                                                    const att_doc_Id = row.cells[0].querySelector('#studId').value.trim();
+                                                    const student = row.cells[1].textContent.trim();
+                                                    const statusInput = row.cells[3].querySelector('#statusInput');
+                                                    const status = statusInput ? statusInput.value.trim() : '';
+                                                    const att_stud = row.cells[4].querySelector('#studInput');
+                                                    const att_stud_class = att_stud ? att_stud.value.trim() : '';
+                                                    console.log("id" + att_doc_Id);
+                                                    console.log("status:" + status);
+
+                                                    const attendanceDocRef = doc(collection(db, 'Attendance_Monitoring', userId, 'attendance'), att_doc_Id);
+
+                                                    const newAttendanceData = {
+                                                        status: status,
+                                                    };
+
+                                                    updateDoc(attendanceDocRef, newAttendanceData)
+                                                        .then(() => {
+                                                            //window.location.href = 'attendance.html';
+                                                            console.log('Document updated successfully!');
+                                                        })
+                                                        .catch((error) => {
+                                                            console.error('Error updating document: ', error);
+                                                        });
+                                                });
+                                            });
+                                            eventListenerUpdated = true;
+                                        }
                                     } else {
                                         const time_in = "";
                                         const status = "";
@@ -511,9 +565,9 @@
                                         <td><input type="time" class="form-control time-input" value="${time_in}" placeholder="Enter time"></td>
                                          <td>
                                             <select class="form-select status-dropdown" id="statusInput">
-                                                <option value="Present" style="color: green;">Present</option>
+                                                <option value="Present on time" style="color: green;">Present on time</option>
                                                 <option value="Absent" style="color:red;">Absent</option>
-                                                <option value="Late" style="color: orange;">Late</option>
+                                                <option value="Present but late" style="color: orange;">Present but late</option>
                                                 <option value="Excuse" style="color: gray;">Excuse</option>
                                             </select>
                                         </td>
@@ -596,7 +650,7 @@
                                             "iDisplayLength": "50"
                                         });
                                         isDataTableInitialized = true;
-                                        
+
                                     });
 
                                 })
