@@ -1,9 +1,8 @@
 const { onSchedule } = require("firebase-functions/v2/scheduler");
 const { setGlobalOptions } = require("firebase-functions/v2");
 setGlobalOptions({ maxInstances: 10 });
-// Set OPENSSL_CONF environment variable
-const puppeteer = require('puppeteer');
-const jsPDF = require('jspdf');
+const { jsPDF } = require('jspdf');
+require('jspdf-autotable');
 
 
 const { initializeApp } = require("firebase/app");
@@ -63,467 +62,6 @@ async function createAttendanceDocument(status, att_stud_class) {
         console.log('Error creating new attendance document. Try Again.');
     }
 }
-
-
-async function markAbsentStudents() {
-
-    userId = "nHZNH5cNkiROddDcg9oY8M6wXPI3";
-    userRef = collection(db, "Attendance_Monitoring");
-    stud_classRef = collection(userRef, userId, "stud_class");
-    attendanceRef = collection(userRef, userId, "attendance");
-    classListRef = collection(userRef, userId, "class_list");
-
-    let studRefs = [];
-    let stud_names = [];
-    let stud_name;
-
-    const filteredPromises = [];
-    const filteredAttendance = [];
-
-    function sortByStudentName(a, b) {
-        const nameA = a.student.toUpperCase();
-        const nameB = b.student.toUpperCase();
-
-        if (nameA < nameB) {
-            return -1;
-        }
-        if (nameA > nameB) {
-            return 1;
-        }
-        return 0;
-    }
-
-    try {
-        const studClassSnapshot = await getDocs(stud_classRef);
-
-        const promises = studClassSnapshot.docs.map(async (studClassDoc) => {
-            const studClassData = studClassDoc.data();
-            const studentRef = studClassData.student;
-            const classRef = studClassData.class;
-
-            let studRef;
-
-            const [studentDoc, classDoc] = await Promise.all([getDoc(studentRef), getDoc(classRef)]);
-
-            if (studentDoc.exists && classDoc.exists && classDoc.data().class_name_sec === "ITE184-IT4D") {
-                stud_name = studentDoc.data().stud_name;
-                stud_email = studentDoc.data().stud_email;
-                const class_name_sec = classDoc.data().class_name_sec;
-                studRef = studClassDoc.ref.path;
-                studRefs.push(studRef);
-                stud_names.push({ stud_name, stud_email, studRef });
-                console.log(stud_name, class_name_sec, stud_email);
-
-                filteredPromises.push({ stud_name, class_name_sec, stud_email, studRef });
-            }
-        });
-
-        await Promise.all(promises);
-    } catch (error) {
-        console.error("Error fetching stud_class documents:", error);
-        return;
-    }
-
-    try {
-        const attendanceSnapshot = await getDocs(attendanceRef);
-
-        for (const attendanceDoc of attendanceSnapshot.docs) {
-            const attendanceData = attendanceDoc.data();
-            const att_Id = attendanceDoc.id;
-            const att_stud_class = attendanceData.student_class.path;
-            const status = attendanceData.status;
-            const date_time = attendanceData.date_time;
-            console.log("Attendance Data:", att_stud_class, status, date_time);
-
-            for (const filteredPromise of filteredPromises) {
-                const studRefer = filteredPromise.studRef;
-                console.log("studrefer:" + studRefer);
-                const student = filteredPromise.stud_name;
-                const email = filteredPromise.stud_email;
-                const nonstat = "";
-                const nondate = "";
-
-                const currentDate = new Date();
-                currentDate.setHours(0, 0, 0, 0);
-                const selectedDateStart = new Date(currentDate);
-                selectedDateStart.setHours(0, 0, 0, 0);
-                const selectedDateEnd = new Date(currentDate);
-                selectedDateEnd.setHours(23, 59, 59, 999);
-
-                let date_time;
-
-                if (!attendanceData.date_time) {
-                    date_time = 0;
-                } else {
-                    date_time = attendanceData.date_time.toDate();
-                    date_time.setHours(0, 0, 0, 0);
-                }
-
-                const existingIndex = filteredAttendance.findIndex(item => item.student === student);
-                console.log("date_time:" + date_time);
-                console.log("curDate: " + selectedDateStart + selectedDateEnd);
-
-                if (att_stud_class === studRefer &&
-                    date_time >= selectedDateStart &&
-                    date_time <= selectedDateEnd) {
-                    if (existingIndex !== -1) {
-                        filteredAttendance[existingIndex].att_stud_class = studRefer;
-                        filteredAttendance[existingIndex].status = status;
-                        filteredAttendance[existingIndex].date_time = date_time;
-                        filteredAttendance[existingIndex].att_Id = att_Id;
-                        filteredAttendance[existingIndex].email = email;
-                    } else {
-                        filteredAttendance.push({
-                            att_Id: att_Id,
-                            student: student,
-                            email: email,
-                            att_stud_class: att_stud_class,
-                            status: status,
-                            date_time: date_time
-                        });
-                    }
-                } else {
-                    if (existingIndex === -1) {
-                        filteredAttendance.push({
-                            att_Id: att_Id,
-                            student: student,
-                            email: email,
-                            att_stud_class: studRefer,
-                            status: nonstat,
-                            date_time: nondate
-                        });
-                    }
-                }
-
-                console.log("existingIndex:", existingIndex);
-                console.log("filteredAttendance:", filteredAttendance);
-            }
-
-        }
-
-        const filteredAttendanceData = filteredAttendance;
-        filteredAttendanceData.sort(sortByStudentName);
-        let emailBody;
-
-        const rows = [];
-
-        for (const attendance of filteredAttendanceData) {
-            const att_Id = attendance.att_Id;
-            const student = attendance.student;
-            const email = attendance.email;
-            const student_class = attendance.att_stud_class;
-            const status = attendance.status;
-            const date = attendance.date_time;
-
-            const currentDate = new Date();
-            currentDate.setHours(0, 0, 0, 0);
-            const selectedDateStart = new Date(currentDate);
-            selectedDateStart.setHours(0, 0, 0, 0);
-            const selectedDateEnd = new Date(currentDate);
-            selectedDateEnd.setHours(23, 59, 59, 999);
-
-            if (studRefs.includes(student_class) &&
-                date >= selectedDateStart &&
-                date <= selectedDateEnd) {
-                console.log("Attendance Checked at this point");
-                const formattedDate = date.toISOString().split('T')[0]; // Get the date part
-                // Prepare the email body
-                const emailBody = collatedAttendance.map((attendance) => {
-                    return `${attendance.student}: ${attendance.status} on ${formattedDate}`;
-                }).join('\n');
-                
-            } else {
-                console.log("Storing Absent Attendance");
-                
-            }
-        }
-        const mailOptions = {
-            from: 'capstonetestustp@gmail.com',
-            to: email, // Replace with the actual student's email
-            subject: 'Collated Attendance Report',
-            text: `Dear Instructor,\n\n${emailBody}\n\nSincerely,\nUSTP`,
-        };
-
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.error('Error sending email: ', error);
-            } else {
-                console.log('Email sent: ', info.response);
-            }
-        });
-    } catch (error) {
-        console.error("Error fetching attendance documents:", error);
-    }
-}
-
-
-// Function to generate PDF using jsPDF
-const generatePDF = async (htmlContent) => {
-    try {
-        const pdf = new jsPDF();
-        await pdf.html(htmlContent);
-        return pdf.output('arraybuffer');
-    } catch (error) {
-        console.error('Error generating PDF:', error);
-        throw error;
-    }
-};
-
-// Function to retrieve and display data based on the selected class
-const sendMailStudents = async () => {
-    const userId = "nHZNH5cNkiROddDcg9oY8M6wXPI3";
-    const userRef = collection(db, "Attendance_Monitoring");
-    const stud_classRef = collection(userRef, userId, "stud_class");
-    const attendanceRef = collection(userRef, userId, "attendance");
-    const classListRef = collection(userRef, userId, "class_list");
-    const profileRef = collection(db, "Attendance_Monitoring", userId, 'profile');
-
-    const studRefs = [];
-    const stud_names = [];
-    let stud_name;
-    let counter = 1;
-
-    const filteredPromises = [];
-    const filteredAttendance = [];
-
-    const sortByStudentName = (a, b) => {
-        const nameA = a.student.toUpperCase();
-        const nameB = b.student.toUpperCase();
-
-        if (nameA < nameB) {
-            return -1;
-        }
-        if (nameA > nameB) {
-            return 1;
-        }
-        return 0;
-    };
-
-    try {
-        const studClassSnapshot = await getDocs(stud_classRef);
-
-        const promises = studClassSnapshot.docs.map(async (studClassDoc) => {
-            const studClassData = studClassDoc.data();
-            const studentRef = studClassData.student;
-            const classRef = studClassData.class;
-
-            const [studentDoc, classDoc] = await Promise.all([getDoc(studentRef), getDoc(classRef)]);
-
-            if (studentDoc.exists && classDoc.exists && classDoc.data().class_name_sec === "ITE184-IT4D") {
-                stud_name = studentDoc.data().stud_name;
-                const class_name_sec = classDoc.data().class_name_sec;
-                const studRef = studClassDoc.ref.path;
-                studRefs.push(studRef);
-                stud_names.push({ stud_name, studRef });
-                console.log(stud_name, class_name_sec);
-
-                filteredPromises.push({ stud_name, class_name_sec, studRef });
-            }
-        });
-
-        await Promise.all(promises);
-    } catch (error) {
-        console.error("Error fetching stud_class documents:", error);
-        return;
-    }
-
-    try {
-        const attendanceSnapshot = await getDocs(attendanceRef);
-
-        for (const attendanceDoc of attendanceSnapshot.docs) {
-            const attendanceData = attendanceDoc.data();
-            const att_Id = attendanceDoc.id;
-            const att_stud_class = attendanceData.student_class.path;
-            const status = attendanceData.status;
-            const date_time = attendanceData.date_time;
-            console.log("Attendance Data:", att_stud_class, status, date_time);
-
-            for (const filteredPromise of filteredPromises) {
-                const studRefer = filteredPromise.studRef;
-                console.log("studrefer:" + studRefer);
-                const student = filteredPromise.stud_name;
-                const nonstat = "";
-                const nondate = "";
-
-                const currentDate = new Date();
-                currentDate.setHours(0, 0, 0, 0);
-                const selectedDateStart = new Date(currentDate);
-                selectedDateStart.setHours(0, 0, 0, 0);
-                const selectedDateEnd = new Date(currentDate);
-                selectedDateEnd.setHours(23, 59, 59, 999);
-
-                let date_time_value;
-
-                if (!date_time) {
-                    date_time_value = 0;
-                } else {
-                    date_time_value = date_time.toDate();
-                    date_time_value.setHours(0, 0, 0, 0);
-                }
-
-                const existingIndex = filteredAttendance.findIndex(item => item.student === student);
-                console.log("date_time:" + date_time_value);
-                console.log("curDate: " + selectedDateStart + selectedDateEnd);
-
-                if (att_stud_class === studRefer &&
-                    date_time_value >= selectedDateStart &&
-                    date_time_value <= selectedDateEnd) {
-                    if (existingIndex !== -1) {
-                        filteredAttendance[existingIndex] = {
-                            att_Id,
-                            student,
-                            att_stud_class: studRefer,
-                            status,
-                            date_time: date_time_value
-                        };
-                    } else {
-                        filteredAttendance.push({
-                            att_Id,
-                            student,
-                            att_stud_class: studRefer,
-                            status,
-                            date_time: date_time_value
-                        });
-                    }
-                } else {
-                    if (existingIndex === -1) {
-                        filteredAttendance.push({
-                            att_Id,
-                            student,
-                            att_stud_class: studRefer,
-                            status: nonstat,
-                            date_time: nondate
-                        });
-                    }
-                }
-
-                console.log("existingIndex:", existingIndex);
-                console.log("filteredAttendance:", filteredAttendance);
-            }
-        }
-
-        const filteredAttendanceData = filteredAttendance.slice();
-        filteredAttendanceData.sort(sortByStudentName);
-
-        const rows = [];
-
-        for (const attendance of filteredAttendanceData) {
-            const att_Id = attendance.att_Id;
-            const student = attendance.student;
-            const student_class = attendance.att_stud_class;
-            const status = attendance.status;
-            const date = attendance.date_time;
-
-            const currentDate = new Date();
-            currentDate.setHours(0, 0, 0, 0);
-            const selectedDateStart = new Date(currentDate);
-            selectedDateStart.setHours(0, 0, 0, 0);
-            const selectedDateEnd = new Date(currentDate);
-            selectedDateEnd.setHours(23, 59, 59, 999);
-
-            if (studRefs.includes(student_class) &&
-                date >= selectedDateStart &&
-                date <= selectedDateEnd) {
-                // Format the date and time
-                const formattedDate = date.toLocaleDateString(); // Adjust the format based on your preference
-                const formattedTime = date.toLocaleTimeString(); // Adjust the format based on your preference
-
-                const time_in = `${formattedTime}`;
-                console.log(stud_name, time_in, status);
-                const statusStyle = status === 'Absent' ? 'color: red;' : status === 'Present on time' ? 'color: green;' : status === 'Late' ? 'color: orange;' : status === 'Excuse' ? 'color: gray;' : '';
-
-                const row = `<tr>
-                    <td>${counter}</td>
-                    <td>${student}</td>
-                    <td>${time_in}</td>
-                    <td style="${statusStyle}">${status}</td>
-                </tr>`;
-
-                // Push a promise for each row to the attendancePromises array
-                rows.push(row);
-
-                // Increment the counter for the next iteration
-                counter++;
-            } else {
-                const time_in = '';
-                const status = '';
-                const row = `<tr>
-                    <td>${counter}</td>
-                    <td>${student}</td>
-                    <td>${time_in}</td>
-                    <td>${status}</td>
-                </tr>`;
-                rows.push(row);
-                counter++;
-            }
-        }
-
-        const formattedDate = new Date().toLocaleDateString(); // Adjust the format based on your preference
-
-        const html = `<html lang="en">
-            <head>
-                <style>
-                    /* Add any additional styling here */
-                </style>
-            </head>
-            <body>
-                <h1>Attendance Report - ${formattedDate}</h1>
-                <table>
-                <thead>
-											<tr>
-												<td>No. </td>
-												<td>Name</td>
-												<td>Time In</td>
-												<td>Status</td>
-											</tr>
-										</thead>
-                                        <tbody>
-                    <!-- Your existing table structure goes here -->
-                    ${rows.join('')}
-                    </tbody>
-                </table>
-            </body>
-        </html>`;
-
-        // Generate PDF using jsPDF
-        const pdfBuffer = await generatePDF(html);
-
-        const profileRefSnapshot = await getDocs(profileRef);
-        const user = profileRefSnapshot.docs[0].data(); // Assuming there is only one user
-        const { fname, lname, email } = user;
-
-        const currentDate = new Date();
-        const formattedDateForSubject = currentDate.toISOString().split('T')[0];
-
-        // Attach the PDF to the email
-        const mailOptions = {
-            from: 'capstonetestustp@gmail.com',
-            to: email,
-            subject: `${formattedDateForSubject} Attendance Report`,
-            text: `Dear ${fname} ${lname},\n\nAttached here is the attendance report for your ITE184-IT4D class on ${formattedDateForSubject}. If you have received this email by mistake, please contact us.\n\nSincerely,\nUSTP`,
-            attachments: [
-                {
-                    filename: 'Attendance_Report.pdf',
-                    content: pdfBuffer,
-                    encoding: 'base64',
-                    contentType: 'application/pdf',
-                },
-            ],
-        };
-
-        // Send the email with the attached PDF
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.error('Error sending email: ', error);
-            } else {
-                console.log('Email sent: ', info.response);
-            }
-        });
-    } catch (error) {
-        console.error("Error fetching attendance documents:", error);
-    }
-};
-
 async function markAbsentCOMSYS1() {
 
     userId = "UWJ8xFUHj2Srv33QmeOHFdJkz7j1";
@@ -689,7 +227,7 @@ async function markAbsentCOMSYS1() {
                     from: 'capstonetestustp@gmail.com',
                     to: email, // Replace with the actual student's email
                     subject: 'Attendance Notification',
-                    text: `Dear ${student},\n\nYou were marked ${status} on ${formattedDate} in  your ITE184-IT4D class. Please contact us if there is any discrepancy.\n\nSincerely,\nUSTP`
+                    text: `Dear ${student},\n\nYou were marked ${status} on ${formattedDate} in  your ECE415 - Communication System Analysis class. Please contact us if there is any discrepancy.\n\nSincerely,\nUSTP`
                 };
 
                 transporter.sendMail(mailOptions, (error, info) => {
@@ -708,7 +246,7 @@ async function markAbsentCOMSYS1() {
                     from: 'capstonetestustp@gmail.com',
                     to: email, // Replace with the actual student's email
                     subject: 'Attendance Notification',
-                    text: `Dear ${student},\n\nYou were marked Absent on ${formattedDate} in  your ITE184-IT4D class. Please contact us if there is any discrepancy.\n\nSincerely,\nUSTP`
+                    text: `Dear ${student},\n\nYou were marked Absent on ${formattedDate} in  your ECE415 - Communication System Analysis class. Please contact us if there is any discrepancy.\n\nSincerely,\nUSTP`
                 };
 
                 transporter.sendMail(mailOptions, (error, info) => {
@@ -890,7 +428,7 @@ async function markAbsentMicro2() {
                     from: 'capstonetestustp@gmail.com',
                     to: email, // Replace with the actual student's email
                     subject: 'Attendance Notification',
-                    text: `Dear ${student},\n\nYou were marked ${status} on ${formattedDate} in  your ITE184-IT4D class. Please contact us if there is any discrepancy.\n\nSincerely,\nUSTP`
+                    text: `Dear ${student},\n\nYou were marked ${status} on ${formattedDate} in  your ECE417 Microelectronics - ECE4A class. Please contact us if there is any discrepancy.\n\nSincerely,\nUSTP`
                 };
 
                 transporter.sendMail(mailOptions, (error, info) => {
@@ -909,7 +447,7 @@ async function markAbsentMicro2() {
                     from: 'capstonetestustp@gmail.com',
                     to: email, // Replace with the actual student's email
                     subject: 'Attendance Notification',
-                    text: `Dear ${student},\n\nYou were marked Absent on ${formattedDate} in  your ITE184-IT4D class. Please contact us if there is any discrepancy.\n\nSincerely,\nUSTP`
+                    text: `Dear ${student},\n\nYou were marked Absent on ${formattedDate} in  your ECE417 Microelectronics - ECE4A class. Please contact us if there is any discrepancy.\n\nSincerely,\nUSTP`
                 };
 
                 transporter.sendMail(mailOptions, (error, info) => {
@@ -926,48 +464,23 @@ async function markAbsentMicro2() {
     }
 }
 
+async function sendReportMicro() {
 
-/*
+    userId = "6jOHKDfcdNgLg3gSoiP4QTMsmlE2";
+    userRef = collection(db, "Attendance_Monitoring");
+    stud_classRef = collection(userRef, userId, "stud_class");
+    attendanceRef = collection(userRef, userId, "attendance");
+    classListRef = collection(userRef, userId, "class_list");
+    profileRef = collection(db, "Attendance_Monitoring", userId, 'profile');
 
-const generatePDF = async (html) => {
-    const browser = await puppeteer.launch({
-        executablePath: 'C:\Users\Acer\.cache\puppeteer\chrome\win64-119.0.6045.105\chrome-win64\chrome.exe',
-        headless: true,
-        args:['--no-sandbox']
-    });
-    const page = await browser.newPage();
-
-    // Set the content of the page to your HTML
-    await page.setContent(html);
-
-    // Generate the PDF buffer
-    const pdfBuffer = await page.pdf({
-        format: 'Letter',
-        printBackground: true,
-    });
-
-    await browser.close();
-
-    return pdfBuffer;
-};
-
-const sendMailStudents = async () => {
-    const userId = "nHZNH5cNkiROddDcg9oY8M6wXPI3";
-    const userRef = collection(db, "Attendance_Monitoring");
-    const stud_classRef = collection(userRef, userId, "stud_class");
-    const attendanceRef = collection(userRef, userId, "attendance");
-    const classListRef = collection(userRef, userId, "class_list");
-    const profileRef = collection(db, "Attendance_Monitoring", userId, 'profile');
-
-    const studRefs = [];
-    const stud_names = [];
+    let studRefs = [];
+    let stud_names = [];
     let stud_name;
-    let counter = 1;
 
     const filteredPromises = [];
     const filteredAttendance = [];
 
-    const sortByStudentName = (a, b) => {
+    function sortByStudentName(a, b) {
         const nameA = a.student.toUpperCase();
         const nameB = b.student.toUpperCase();
 
@@ -978,7 +491,7 @@ const sendMailStudents = async () => {
             return 1;
         }
         return 0;
-    };
+    }
 
     try {
         const studClassSnapshot = await getDocs(stud_classRef);
@@ -988,17 +501,20 @@ const sendMailStudents = async () => {
             const studentRef = studClassData.student;
             const classRef = studClassData.class;
 
+            let studRef;
+
             const [studentDoc, classDoc] = await Promise.all([getDoc(studentRef), getDoc(classRef)]);
 
-            if (studentDoc.exists && classDoc.exists && classDoc.data().class_name_sec === "ITE184-IT4D") {
+            if (studentDoc.exists && classDoc.exists && classDoc.data().class_name_sec === "ECE417 Microelectronics - ECE4A") {
                 stud_name = studentDoc.data().stud_name;
+                stud_email = studentDoc.data().stud_email;
                 const class_name_sec = classDoc.data().class_name_sec;
-                const studRef = studClassDoc.ref.path;
+                studRef = studClassDoc.ref.path;
                 studRefs.push(studRef);
-                stud_names.push({ stud_name, studRef });
-                console.log(stud_name, class_name_sec);
+                stud_names.push({ stud_name, stud_email, studRef });
+                console.log(stud_name, class_name_sec, stud_email);
 
-                filteredPromises.push({ stud_name, class_name_sec, studRef });
+                filteredPromises.push({ stud_name, class_name_sec, stud_email, studRef });
             }
         });
 
@@ -1016,13 +532,15 @@ const sendMailStudents = async () => {
             const att_Id = attendanceDoc.id;
             const att_stud_class = attendanceData.student_class.path;
             const status = attendanceData.status;
+            const time = attendanceData.date_time;
             const date_time = attendanceData.date_time;
-            console.log("Attendance Data:", att_stud_class, status, date_time);
+            console.log("Attendance Data:", att_stud_class, status, date_time, time);
 
             for (const filteredPromise of filteredPromises) {
                 const studRefer = filteredPromise.studRef;
                 console.log("studrefer:" + studRefer);
                 const student = filteredPromise.stud_name;
+                const email = filteredPromise.stud_email;
                 const nonstat = "";
                 const nondate = "";
 
@@ -1033,44 +551,46 @@ const sendMailStudents = async () => {
                 const selectedDateEnd = new Date(currentDate);
                 selectedDateEnd.setHours(23, 59, 59, 999);
 
-                let date_time_value;
+                let date_time;
 
-                if (!date_time) {
-                    date_time_value = 0;
+                if (!attendanceData.date_time) {
+                    date_time = 0;
                 } else {
-                    date_time_value = date_time.toDate();
-                    date_time_value.setHours(0, 0, 0, 0);
+                    date_time = attendanceData.date_time.toDate();
+                    date_time.setHours(0, 0, 0, 0);
                 }
 
                 const existingIndex = filteredAttendance.findIndex(item => item.student === student);
-                console.log("date_time:" + date_time_value);
+                console.log("date_time:" + date_time);
                 console.log("curDate: " + selectedDateStart + selectedDateEnd);
 
                 if (att_stud_class === studRefer &&
-                    date_time_value >= selectedDateStart &&
-                    date_time_value <= selectedDateEnd) {
+                    date_time >= selectedDateStart &&
+                    date_time <= selectedDateEnd) {
                     if (existingIndex !== -1) {
-                        filteredAttendance[existingIndex] = {
-                            att_Id,
-                            student,
-                            att_stud_class: studRefer,
-                            status,
-                            date_time: date_time_value
-                        };
+                        filteredAttendance[existingIndex].att_stud_class = studRefer;
+                        filteredAttendance[existingIndex].status = status;
+                        filteredAttendance[existingIndex].date_time = date_time;
+                        filteredAttendance[existingIndex].att_Id = att_Id;
+                        filteredAttendance[existingIndex].email = email;
+                        filteredAttendance[existingIndex].time = time;
                     } else {
                         filteredAttendance.push({
-                            att_Id,
-                            student,
-                            att_stud_class: studRefer,
-                            status,
-                            date_time: date_time_value
+                            att_Id: att_Id,
+                            student: student,
+                            email: email,
+                            att_stud_class: att_stud_class,
+                            status: status,
+                            date_time: date_time,
+                            time: time,
                         });
                     }
                 } else {
                     if (existingIndex === -1) {
                         filteredAttendance.push({
-                            att_Id,
-                            student,
+                            att_Id: att_Id,
+                            student: student,
+                            email: email,
                             att_stud_class: studRefer,
                             status: nonstat,
                             date_time: nondate
@@ -1081,19 +601,24 @@ const sendMailStudents = async () => {
                 console.log("existingIndex:", existingIndex);
                 console.log("filteredAttendance:", filteredAttendance);
             }
+
         }
 
-        const filteredAttendanceData = filteredAttendance.slice();
+        const filteredAttendanceData = filteredAttendance;
         filteredAttendanceData.sort(sortByStudentName);
+        let emailBody = [];
+        let formattedDate;
 
         const rows = [];
 
         for (const attendance of filteredAttendanceData) {
             const att_Id = attendance.att_Id;
             const student = attendance.student;
+            const email = attendance.email;
             const student_class = attendance.att_stud_class;
             const status = attendance.status;
             const date = attendance.date_time;
+            const time = attendance.time;
 
             const currentDate = new Date();
             currentDate.setHours(0, 0, 0, 0);
@@ -1105,91 +630,359 @@ const sendMailStudents = async () => {
             if (studRefs.includes(student_class) &&
                 date >= selectedDateStart &&
                 date <= selectedDateEnd) {
-                // Format the date and time
-                const formattedDate = date.toLocaleDateString(); // Adjust the format based on your preference
-                const formattedTime = date.toLocaleTimeString(); // Adjust the format based on your preference
-
-                const time_in = `${formattedTime}`;
-                console.log(stud_name, time_in, status);
-                const statusStyle = status === 'Absent' ? 'color: red;' : status === 'Present on time' ? 'color: green;' : status === 'Late' ? 'color: orange;' : status === 'Excuse' ? 'color: gray;' : '';
-
-                const row = `<tr>
-                    <td>${counter}</td>
-                    <td>${student}</td>
-                    <td>${time_in}</td>
-                    <td style="${statusStyle}">${status}</td>
-                </tr>`;
-
-                // Push a promise for each row to the attendancePromises array
-                rows.push(row);
-
-                // Increment the counter for the next iteration
-                counter++;
+                formattedDate = date.toISOString().split('T')[0]; // Get the date part
+                const newTime = time.toDate();
+                const formattedTime = newTime.toLocaleTimeString();
+                // Prepare the email body
+                emailBody.push({
+                    student: student,
+                    status: status,
+                    time: formattedTime
+                });
+                console.log("Attendance Checked at this point");
             } else {
-                const time_in = '';
-                const status = '';
-                const row = `<tr>
-                    <td>${counter}</td>
-                    <td>${student}</td>
-                    <td>${time_in}</td>
-                    <td>${status}</td>
-                </tr>`;
-                rows.push(row);
-                counter++;
+                console.log("Storing Absent Attendance");
+
             }
         }
+        const attendance = emailBody.map(info => [info.student, info.status, info.time]);
+        // Generate PDF
+        const createPDF = () => {
+            const pdf = new jsPDF({
+                orientation: "portrait",
+                unit: "cm",
+                format: "a4",
+            });
 
-        const formattedDate = new Date().toLocaleDateString(); // Adjust the format based on your preference
+            const pageWidth = pdf.internal.pageSize.getWidth();
 
-        const html = `<html lang="en">
-            <!-- ... (your existing HTML content) ... -->
-        </html>`;
+            // Add the title in the center at the top
+            const title = "ECE417 - ECE4A Attendance Report";
+            const titleWidth = pdf.getStringUnitWidth(title) * pdf.internal.getFontSize() / pdf.internal.scaleFactor;
+            const titleX = (pageWidth - titleWidth) / 2;
+            pdf.text(title, titleX, 3);
 
-        // Generate PDF using puppeteer
-        const pdfBuffer = await generatePDF(html);
+            // Set a smaller font size for the date
+            pdf.setFontSize(10);
 
-        const profileRefSnapshot = await getDocs(profileRef);
-        const user = profileRefSnapshot.docs[0].data(); // Assuming there is only one user
-        const { fname, lname, email } = user;
+            // Add the date below the title, center-aligned
+            const date = "Date: " + formattedDate;
+            const dateWidth = pdf.getStringUnitWidth(date) * pdf.internal.getFontSize() / pdf.internal.scaleFactor;
+            const dateX = (pageWidth - dateWidth) / 2;
+            pdf.text(date, dateX, 4);
 
-        const currentDate = new Date();
-        const formattedDateForSubject = currentDate.toISOString().split('T')[0];
 
-        // Attach the PDF to the email
-        const mailOptions = {
-            from: 'capstonetestustp@gmail.com',
-            to: email,
-            subject: `${formattedDateForSubject} Attendance Report`,
-            text: `Dear ${fname} ${lname},\n\nAttached here is the attendance report for your ITE184-IT4D class on ${formattedDateForSubject}. If you have received this email by mistake, please contact us.\n\nSincerely,\nUSTP`,
-            attachments: [
-                {
-                    filename: 'Attendance_Report.pdf',
-                    content: pdfBuffer,
-                    encoding: 'base64',
-                    contentType: 'application/pdf',
-                },
-            ],
-        };
+            console.log("emailBody content:", attendance);
+            pdf.setFontSize(12);
+            pdf.autoTable({
+                theme: 'grid',
+                startY: 5,
+                head: [['Student', 'Status', 'Timestamp']],
+                body: attendance,
+            });
 
-        // Send the email with the attached PDF
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.error('Error sending email: ', error);
-            } else {
-                console.log('Email sent: ', info.response);
-            }
-        });
+            pdf.save("Attendance Report");
+
+            const pdfOutput = pdf.output("datauristring");
+            return pdfOutput;
+        }
+
+        const pdfOutput = createPDF();
+
+        getDocs(profileRef).then((userRefSnapshot) => {
+
+            userRefSnapshot.forEach((userListDoc) => {
+                const userInfo = userListDoc.data();
+                const fname = userInfo.fname;
+                const lname = userInfo.lname;
+                const email = userInfo.email;
+
+                const mailOptions = {
+                    from: 'capstonetestustp@gmail.com',
+                    to: email, // Replace with the actual student's email
+                    subject: 'Collated Attendance Report',
+                    text: `Dear ${fname} ${lname},\n\nThe attached file below is the an attendance report from your ECE417 Microelectronics - ECE4A class held today. Should you have any questions or require further information, please feel free to contact us.\n\nKind Regards,\nUSTP`,
+                    attachments: [{ path: pdfOutput }],
+                };
+
+                transporter.sendMail(mailOptions, (error, info) => {
+                    if (error) {
+                        console.error('Error sending email: ', error);
+                    } else {
+                        console.log('Email sent: ', info.response);
+                    }
+                });
+            })
+
+
+        })
+
     } catch (error) {
         console.error("Error fetching attendance documents:", error);
     }
-};
-*/
+}
 
+async function sendReportCOMSYS() {
 
-/*
-exports.markAbsentStudents = onSchedule("25 22 * 1 1", async (event) => {
+    userId = "UWJ8xFUHj2Srv33QmeOHFdJkz7j1";
+    userRef = collection(db, "Attendance_Monitoring");
+    stud_classRef = collection(userRef, userId, "stud_class");
+    attendanceRef = collection(userRef, userId, "attendance");
+    classListRef = collection(userRef, userId, "class_list");
+    profileRef = collection(db, "Attendance_Monitoring", userId, 'profile');
+
+    let studRefs = [];
+    let stud_names = [];
+    let stud_name;
+
+    const filteredPromises = [];
+    const filteredAttendance = [];
+
+    function sortByStudentName(a, b) {
+        const nameA = a.student.toUpperCase();
+        const nameB = b.student.toUpperCase();
+
+        if (nameA < nameB) {
+            return -1;
+        }
+        if (nameA > nameB) {
+            return 1;
+        }
+        return 0;
+    }
+
     try {
-        await markAbsentStudents();
+        const studClassSnapshot = await getDocs(stud_classRef);
+
+        const promises = studClassSnapshot.docs.map(async (studClassDoc) => {
+            const studClassData = studClassDoc.data();
+            const studentRef = studClassData.student;
+            const classRef = studClassData.class;
+
+            let studRef;
+
+            const [studentDoc, classDoc] = await Promise.all([getDoc(studentRef), getDoc(classRef)]);
+
+            if (studentDoc.exists && classDoc.exists && classDoc.data().class_name_sec === "ECE415 Communication System Analysis - ECE4A") {
+                stud_name = studentDoc.data().stud_name;
+                stud_email = studentDoc.data().stud_email;
+                const class_name_sec = classDoc.data().class_name_sec;
+                studRef = studClassDoc.ref.path;
+                studRefs.push(studRef);
+                stud_names.push({ stud_name, stud_email, studRef });
+                console.log(stud_name, class_name_sec, stud_email);
+
+                filteredPromises.push({ stud_name, class_name_sec, stud_email, studRef });
+            }
+        });
+
+        await Promise.all(promises);
+    } catch (error) {
+        console.error("Error fetching stud_class documents:", error);
+        return;
+    }
+
+    try {
+        const attendanceSnapshot = await getDocs(attendanceRef);
+
+        for (const attendanceDoc of attendanceSnapshot.docs) {
+            const attendanceData = attendanceDoc.data();
+            const att_Id = attendanceDoc.id;
+            const att_stud_class = attendanceData.student_class.path;
+            const status = attendanceData.status;
+            const time = attendanceData.date_time;
+            const date_time = attendanceData.date_time;
+            console.log("Attendance Data:", att_stud_class, status, date_time, time);
+
+            for (const filteredPromise of filteredPromises) {
+                const studRefer = filteredPromise.studRef;
+                console.log("studrefer:" + studRefer);
+                const student = filteredPromise.stud_name;
+                const email = filteredPromise.stud_email;
+                const nonstat = "";
+                const nondate = "";
+
+                const currentDate = new Date();
+                currentDate.setHours(0, 0, 0, 0);
+                const selectedDateStart = new Date(currentDate);
+                selectedDateStart.setHours(0, 0, 0, 0);
+                const selectedDateEnd = new Date(currentDate);
+                selectedDateEnd.setHours(23, 59, 59, 999);
+
+                let date_time;
+
+                if (!attendanceData.date_time) {
+                    date_time = 0;
+                } else {
+                    date_time = attendanceData.date_time.toDate();
+                    date_time.setHours(0, 0, 0, 0);
+                }
+
+                const existingIndex = filteredAttendance.findIndex(item => item.student === student);
+                console.log("date_time:" + date_time);
+                console.log("curDate: " + selectedDateStart + selectedDateEnd);
+
+                if (att_stud_class === studRefer &&
+                    date_time >= selectedDateStart &&
+                    date_time <= selectedDateEnd) {
+                    if (existingIndex !== -1) {
+                        filteredAttendance[existingIndex].att_stud_class = studRefer;
+                        filteredAttendance[existingIndex].status = status;
+                        filteredAttendance[existingIndex].date_time = date_time;
+                        filteredAttendance[existingIndex].att_Id = att_Id;
+                        filteredAttendance[existingIndex].email = email;
+                        filteredAttendance[existingIndex].time = time;
+                    } else {
+                        filteredAttendance.push({
+                            att_Id: att_Id,
+                            student: student,
+                            email: email,
+                            att_stud_class: att_stud_class,
+                            status: status,
+                            date_time: date_time,
+                            time: time,
+                        });
+                    }
+                } else {
+                    if (existingIndex === -1) {
+                        filteredAttendance.push({
+                            att_Id: att_Id,
+                            student: student,
+                            email: email,
+                            att_stud_class: studRefer,
+                            status: nonstat,
+                            date_time: nondate
+                        });
+                    }
+                }
+
+                console.log("existingIndex:", existingIndex);
+                console.log("filteredAttendance:", filteredAttendance);
+            }
+
+        }
+
+        const filteredAttendanceData = filteredAttendance;
+        filteredAttendanceData.sort(sortByStudentName);
+        let emailBody = [];
+        let formattedDate;
+
+        const rows = [];
+
+        for (const attendance of filteredAttendanceData) {
+            const att_Id = attendance.att_Id;
+            const student = attendance.student;
+            const email = attendance.email;
+            const student_class = attendance.att_stud_class;
+            const status = attendance.status;
+            const date = attendance.date_time;
+            const time = attendance.time;
+
+            const currentDate = new Date();
+            currentDate.setHours(0, 0, 0, 0);
+            const selectedDateStart = new Date(currentDate);
+            selectedDateStart.setHours(0, 0, 0, 0);
+            const selectedDateEnd = new Date(currentDate);
+            selectedDateEnd.setHours(23, 59, 59, 999);
+
+            if (studRefs.includes(student_class) &&
+                date >= selectedDateStart &&
+                date <= selectedDateEnd) {
+                formattedDate = date.toISOString().split('T')[0]; // Get the date part
+                const newTime = time.toDate();
+                const formattedTime = newTime.toLocaleTimeString();
+                // Prepare the email body
+                emailBody.push({
+                    student: student,
+                    status: status,
+                    time: formattedTime
+                });
+                console.log("Attendance Checked at this point");
+            } else {
+                console.log("Storing Absent Attendance");
+
+            }
+        }
+        const attendance = emailBody.map(info => [info.student, info.status, info.time]);
+        // Generate PDF
+        const createPDF = () => {
+            const pdf = new jsPDF({
+                orientation: "portrait",
+                unit: "cm",
+                format: "a4",
+            });
+
+            const pageWidth = pdf.internal.pageSize.getWidth();
+
+            // Add the title in the center at the top
+            const title = "ECE415 - ECE4A Attendance Report";
+            const titleWidth = pdf.getStringUnitWidth(title) * pdf.internal.getFontSize() / pdf.internal.scaleFactor;
+            const titleX = (pageWidth - titleWidth) / 2;
+            pdf.text(title, titleX, 3);
+
+            // Set a smaller font size for the date
+            pdf.setFontSize(10);
+
+            // Add the date below the title, center-aligned
+            const date = "Date: " + formattedDate;
+            const dateWidth = pdf.getStringUnitWidth(date) * pdf.internal.getFontSize() / pdf.internal.scaleFactor;
+            const dateX = (pageWidth - dateWidth) / 2;
+            pdf.text(date, dateX, 4);
+
+
+            console.log("emailBody content:", attendance);
+            pdf.setFontSize(12);
+            pdf.autoTable({
+                theme: 'grid',
+                startY: 5,
+                head: [['Student', 'Status', 'Timestamp']],
+                body: attendance,
+            });
+
+            pdf.save("Attendance Report");
+
+            const pdfOutput = pdf.output("datauristring");
+            return pdfOutput;
+        }
+
+        const pdfOutput = createPDF();
+
+        getDocs(profileRef).then((userRefSnapshot) => {
+
+            userRefSnapshot.forEach((userListDoc) => {
+                const userInfo = userListDoc.data();
+                const fname = userInfo.fname;
+                const lname = userInfo.lname;
+                const email = userInfo.email;
+
+                const mailOptions = {
+                    from: 'capstonetestustp@gmail.com',
+                    to: email, // Replace with the actual student's email
+                    subject: 'Collated Attendance Report',
+                    text: `Dear ${fname} ${lname},\n\nThe attached file below is the an attendance report from your ECE415 Communication System Analysis - ECE4A class held today. Should you have any questions or require further information, please feel free to contact us.\n\nKind Regards,\nUSTP`,
+                    attachments: [{ path: pdfOutput }],
+                };
+
+                transporter.sendMail(mailOptions, (error, info) => {
+                    if (error) {
+                        console.error('Error sending email: ', error);
+                    } else {
+                        console.log('Email sent: ', info.response);
+                    }
+                });
+            })
+
+
+        })
+
+    } catch (error) {
+        console.error("Error fetching attendance documents:", error);
+    }
+}
+
+exports.sendReportCOMSYS = onSchedule("0 20 * 1 3", async (event) => {
+    try {
+        await sendReportCOMSYS();
         console.log('Function executed successfully.');
     } catch (error) {
         console.error('Error in function:', error);
@@ -1198,7 +991,7 @@ exports.markAbsentStudents = onSchedule("25 22 * 1 1", async (event) => {
 
 exports.markAbsentCOMSYS1 = onSchedule("0 21 * 1 5", async (event) => {
     try {
-        await markAbsentStudents();
+        await markAbsentCOMSYS1();
         console.log('Function executed successfully.');
     } catch (error) {
         console.error('Error in function:', error);
@@ -1206,19 +999,9 @@ exports.markAbsentCOMSYS1 = onSchedule("0 21 * 1 5", async (event) => {
 });
 
 
-exports.markAbsentMicro2 = onSchedule("0 18 * 1 3", async (event) => {
+exports.markAbsentMicro2 = onSchedule("30 14 * 1 5", async (event) => {
     try {
-        await markAbsentStudents();
-        console.log('Function executed successfully.');
-    } catch (error) {
-        console.error('Error in function:', error);
-    }
-});*/
-
-
-exports.sendMailStudents = onSchedule("50 17 * 1 0", async (event) => {
-    try {
-        await sendMailStudents();
+        await markAbsentMicro2();
         console.log('Function executed successfully.');
     } catch (error) {
         console.error('Error in function:', error);
