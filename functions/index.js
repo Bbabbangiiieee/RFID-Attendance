@@ -62,7 +62,7 @@ async function createAttendanceDocument(status, att_stud_class) {
         console.log('Error creating new attendance document. Try Again.');
     }
 }
-async function markAbsentCOMSYS1() {
+async function markAbsentCOMSYS() {
 
     userId = "UWJ8xFUHj2Srv33QmeOHFdJkz7j1";
     userRef = collection(db, "Attendance_Monitoring");
@@ -102,7 +102,7 @@ async function markAbsentCOMSYS1() {
 
             const [studentDoc, classDoc] = await Promise.all([getDoc(studentRef), getDoc(classRef)]);
 
-            if (studentDoc.exists && classDoc.exists && classDoc.data().class_name_sec === "ECE415 - Communication System Analysis") {
+            if (studentDoc.exists && classDoc.exists && classDoc.data().class_name_sec === "ECE415 Communication System Analysis - ECE4A") {
                 stud_name = studentDoc.data().stud_name;
                 stud_email = studentDoc.data().stud_email;
                 const class_name_sec = classDoc.data().class_name_sec;
@@ -227,7 +227,7 @@ async function markAbsentCOMSYS1() {
                     from: 'capstonetestustp@gmail.com',
                     to: email, // Replace with the actual student's email
                     subject: 'Attendance Notification',
-                    text: `Dear ${student},\n\nYou were marked ${status} on ${formattedDate} in  your ECE415 - Communication System Analysis class. Please contact us if there is any discrepancy.\n\nSincerely,\nUSTP`
+                    text: `Dear ${student},\n\nYou were marked ${status} on ${formattedDate} in  your ECE415 Communication System Analysis - ECE4A class. Please contact us if there is any discrepancy.\n\nSincerely,\nUSTP`
                 };
 
                 transporter.sendMail(mailOptions, (error, info) => {
@@ -246,7 +246,7 @@ async function markAbsentCOMSYS1() {
                     from: 'capstonetestustp@gmail.com',
                     to: email, // Replace with the actual student's email
                     subject: 'Attendance Notification',
-                    text: `Dear ${student},\n\nYou were marked Absent on ${formattedDate} in  your ECE415 - Communication System Analysis class. Please contact us if there is any discrepancy.\n\nSincerely,\nUSTP`
+                    text: `Dear ${student},\n\nYou were marked Absent on ${formattedDate} in  your ECE415 Communication System Analysis - ECE4A class. Please contact us if there is any discrepancy.\n\nSincerely,\nUSTP`
                 };
 
                 transporter.sendMail(mailOptions, (error, info) => {
@@ -263,7 +263,7 @@ async function markAbsentCOMSYS1() {
     }
 }
 
-async function markAbsentMicro2() {
+async function markAbsentMicro() {
 
     userId = "6jOHKDfcdNgLg3gSoiP4QTMsmlE2";
     userRef = collection(db, "Attendance_Monitoring");
@@ -632,7 +632,7 @@ async function sendReportMicro() {
                 date <= selectedDateEnd) {
                 formattedDate = date.toISOString().split('T')[0]; // Get the date part
                 const newTime = time.toDate();
-                const formattedTime = newTime.toLocaleTimeString();
+                const formattedTime = newTime.toLocaleTimeString('en-US', { timeZone: 'Asia/Singapore' });
                 // Prepare the email body
                 emailBody.push({
                     student: student,
@@ -890,7 +890,7 @@ async function sendReportCOMSYS() {
                 date <= selectedDateEnd) {
                 formattedDate = date.toISOString().split('T')[0]; // Get the date part
                 const newTime = time.toDate();
-                const formattedTime = newTime.toLocaleTimeString();
+                const formattedTime = newTime.toLocaleTimeString('en-US', { timeZone: 'Asia/Singapore' });
                 // Prepare the email body
                 emailBody.push({
                     student: student,
@@ -980,7 +980,27 @@ async function sendReportCOMSYS() {
     }
 }
 
-exports.sendReportCOMSYS = onSchedule("0 20 * 1 3", async (event) => {
+
+
+exports.markAbsentCOMSYS = onSchedule("0 21 * 1 5", async (event) => {
+    try {
+        await markAbsentCOMSYS();
+        console.log('Function executed successfully.');
+    } catch (error) {
+        console.error('Error in function:', error);
+    }
+});
+
+exports.markAbsentMicro = onSchedule("30 14 * 1 5", async (event) => {
+    try {
+        await markAbsentMicro();
+        console.log('Function executed successfully.');
+    } catch (error) {
+        console.error('Error in function:', error);
+    }
+});
+
+exports.sendReportCOMSYS = onSchedule("5 21 * 1 5", async (event) => {
     try {
         await sendReportCOMSYS();
         console.log('Function executed successfully.');
@@ -989,19 +1009,9 @@ exports.sendReportCOMSYS = onSchedule("0 20 * 1 3", async (event) => {
     }
 });
 
-exports.markAbsentCOMSYS1 = onSchedule("0 21 * 1 5", async (event) => {
+exports.sendReportMicro = onSchedule("35 14 * 1 5", async (event) => {
     try {
-        await markAbsentCOMSYS1();
-        console.log('Function executed successfully.');
-    } catch (error) {
-        console.error('Error in function:', error);
-    }
-});
-
-
-exports.markAbsentMicro2 = onSchedule("30 14 * 1 5", async (event) => {
-    try {
-        await markAbsentMicro2();
+        await sendReportMicro();
         console.log('Function executed successfully.');
     } catch (error) {
         console.error('Error in function:', error);
